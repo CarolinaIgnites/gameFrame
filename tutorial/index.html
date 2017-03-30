@@ -1,0 +1,148 @@
+
+<!--
+
+TODO: This was really quickly hacked together. I'm sure you can clean it up and ake it look prettier. Hopefully with better instructions. I just wanted to give you an idea of what was going on.
+
+They need to know:
+    - How to do Math
+    - Basic Functions
+        - Ifs
+
+Other cool stuff potentially
+    - Interfacing with dom.
+        - Changing background color of an element
+        - Or the font
+        - Something like that
+
+e.g I showed Khalid:
+In HTML:
+    <div id="a" class="container">crap</div>
+
+In JS:
+    $("#a").setAttribute("style","background-color:#f00")
+undefined
+
+ -->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>This is a tutorial page! Open up the browser to play</title>
+        <meta name="description" content="Learn you some Javascript!"/>
+        <meta name="viewport" content="width=device-width" />
+        <script type="text/javascript">
+
+        // Some global variables to check for
+        var name = "no name",
+            names = ['Bob', 'Joe', 'Khalid'],
+            names_len = 0,
+            age = 0;
+
+        window.onload = ()=>{
+
+            // Some helper functions
+            var check = function(id){
+                var el = document.getElementById(id);
+                el.checked = true; 
+                el.disabled=false;
+            }
+
+            // A little hack to check for console
+            var element = new Image();
+            Object.defineProperty(element, 'id', {
+              get: function () {
+                ((w)=>{
+
+                    check("open-task");
+                    console.info("Let me know your name");
+
+                })(window)
+              }
+            });
+            console.info("%cWelcome to the Javascript Console! It's not as scary as it looks.", element);
+
+            // Various Tasks
+            var tasks = [
+                
+                {
+                    'tag': 'name-task',
+                    'f':function() {
+                        if(name != "no name"){
+                            console.info("Congrats " + name + "! Here's another check mark")
+                            return true;
+                        }
+                        return false;
+                    },
+                    'prompt': 'Great! Now let me know your age',
+                },
+
+                {
+                    'tag': 'age-task',
+                    'f':function() {
+                        if(age != 0){
+                            console.info("Congrats you are" + age + "! Here's another check mark")
+                            return true;
+                        }
+                        return false;
+                    },
+                    'prompt': 'Great! Other stuff. There\'s a variable called `names`. Let me know how many names by setting the names_len variable',
+                },
+
+                {
+                    'tag': 'array-task',
+                    'f':function() {
+                        if(names_len > 0){
+                            console.info("Congrats")
+                            return true;
+                        }
+                        return false;
+                    },
+                    'prompt': 'Great! Other stuff',
+                },
+            ]
+
+            var encapsulate = function(id){
+                var id = id;
+                return () =>{
+                    if (tasks[id]['f']()){
+                        clearInterval(tasks[id]['id']);
+                        check(tasks[id]['tag']);
+                        console.info(tasks[id]['prompt'])
+                    }
+                };
+            }
+
+            for(var i = 0; i < tasks.length; i++){
+                tasks[i]['id'] = setInterval(
+                    encapsulate(i)
+                , 1000);
+            }
+        }
+        </script>
+
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    </head>
+    <body>
+
+        <article class="container">
+            <h1> Let's do some things! </h1>
+            <div class="checkbox disabled">
+              <label><input type="checkbox" disabled id="open-task">Open up the console</label>
+            </div>
+            <div class="checkbox disabled">
+              <label><input type="checkbox" disabled id="name-task">Set your name</label>
+            </div>
+            <div class="checkbox disabled">
+              <label><input type="checkbox" disabled id="age-task">Set your age</label>
+            </div>
+
+            <div class="checkbox disabled">
+              <label><input type="checkbox" disabled id="array-task">Learn about arrays!</label>
+            </div>
+
+        </article>
+
+    </body>
+</html>
