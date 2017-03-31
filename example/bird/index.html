@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Game Frame Example</title>
+        <meta name="description" content="TODO"/>
+        <meta name="viewport" content="width=device-width" />
+        <link href="/src/css/gameframe.css" rel="stylesheet">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
+    <body>
+
+    <svg id="game">
+            <rect class="bound static" width="2000" height="50" x=1000 y=0> </rect>
+            <circle id="player" r="50" x=800 y=500 img="bird.png"> </circle>
+            <rect class="bound static" width="2000" height="50" x=1000 y=800> </rect>
+    </svg>
+
+    <svg id="templates">
+        <g class="block static">
+            <rect width="50" height="200" x=0 y=0> </rect>
+            <rect width="50" height="200" x=0 y=500> </rect>
+        </g>
+    </svg>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PhysicsJS/0.7.0/physicsjs-full.min.js"></script>
+    <script src="/src/js/interactive-custom.js"></script>
+    <script src="/src/js/gameframe.js"></script>
+
+    <script type="text/javascript">
+
+        new GameFrame({
+                "name": "The Bird is the word",
+                "instructions": `Remember flappy bird? Well it's back in 40 lines of code`,
+                "boundaries": false,
+                "impulse": true,
+                "gravity": true,
+
+            },function(gf){
+
+            gf.collision(".bound", "#player", function(data, lookup){
+                gf.gameOver();
+            })
+
+            gf.collision(".block", "#player", function(data, lookup){
+                gf.gameOver();
+            })
+
+            gf.registerKeys("#player", {
+                'up': function(player, lookup){
+                    player.state.vel.y -= .5;
+                }
+            })
+
+            gf.registerLoops(function(lookup){
+                for (let obj of lookup[".block"]) {
+                    if(obj.state.pos.x > 1000){
+                        gf.remove(obj);
+                        gf.template(".block", 0, Math.random() * 400)
+                        gf.score(10);
+                    }else{
+                        obj.state.pos.x += 7;
+                    }
+                }
+            });
+
+            // Start off with random points
+            gf.template(".block", -500, Math.random() * 400)
+            gf.template(".block", 0, Math.random() * 400)
+        });
+
+    </script>
+
+    </body>
+</html>

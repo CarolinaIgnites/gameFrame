@@ -188,19 +188,19 @@ var GameFrame;
         if(obj){
             let ids = [];
             if(!el.id){
-                el.id = "generated_" + (seed++);
+                el.id = "generated_" + seed;
+                seed += 1;
             }
             lookup["#" + el.id] = obj;
             ids[ids.length] = "#" + el.id;
             for (let j = 0; j < el.classList.length; j++) {
                 let c = "." + el.classList[j];
                 if(!(c in lookup)){
-                    lookup[c] = []
+                    lookup[c] = new Set();
                 }
-                lookup[c][lookup[c].length] = obj;
+                lookup[c].add(obj);
                 ids[ids.length] = c;
             }
-            el.classList;
             obj.ids = ids;
             world.add(obj);
         }
@@ -209,8 +209,8 @@ var GameFrame;
     // start off all the physics
     let physics = function(){
         Physics({
-            timestep: 1000.0 / 160, // recommended
-            maxIPF: 16,
+//            timestep: 1000.0 / 160, // recommended
+//            maxIPF: 16,
         }, function(w){
 
             // Global scope
@@ -280,12 +280,15 @@ var GameFrame;
             });
 
             // subscribe to ticker to advance the simulation
-            Physics.util.ticker.on(function( time, dt ){
-                world.step(time);
-            });
+            if(!started){
+                Physics.util.ticker.on(function( time, dt ){
+                    world.step(time);
+                });
+            }
 
             // Start it off
             Physics.util.ticker.start();
+            started = true;
         });
     };
 
@@ -296,7 +299,7 @@ var GameFrame;
         keys[key] = true;
         if(key in keyEvents){
             for (let id in keyEvents[key]) {
-                keyEvents[key][id](lookup[id]);
+                keyEvents[key][id](lookup[id], lookup);
             }
         }
     });
@@ -320,9 +323,9 @@ var GameFrame;
         // Set settings
         GameFrame.prototype.name = settings["name"] || "GameFrame Game";
         GameFrame.prototype.instructions = settings["instructions"] || "instructions";
-        GameFrame.prototype.boundaries = settings["boundaries"] || true;
-        GameFrame.prototype.impulse = settings["impulse"] || true;
-        GameFrame.prototype.gravity = settings["gravity"] || false;
+        GameFrame.prototype.boundaries = "boundaries" in settings ? settings["boundaries"] : true;
+        GameFrame.prototype.impulse = "impulse" in settings ? settings["impulse"] : true;
+        GameFrame.prototype.gravity = "gravity" in settings ? settings["gravity"] : false;
         GameFrame.prototype.game = f;
 
         // Create modal and other pieces
@@ -338,8 +341,12 @@ var GameFrame;
 
     // Kill the obj
     GameFrame.prototype.remove = function(obj){
-        world.remove(obj);
-        // TODO: Remove from lookups. Maybe.
+        world.removeBody(obj);
+
+        delete lookup[obj.ids[0]];
+        for (var i = 1; i < obj.ids.length; i++) {
+            lookup[obj.ids[i]].delete(obj);
+        }
     }
 
     // Bind events
@@ -359,7 +366,7 @@ var GameFrame;
 
     // Create a obj from a template
     GameFrame.prototype.template = function(id, x, y){
-        let el = templates.querySelector(id);
+        let el = templates.querySelector(id).cloneNode(true);
         el.setAttribute('x', (x || el.attributes["x"]) | 0);
         el.setAttribute('y', (y || el.attributes["y"]) | 0);
         buildObj(el);
@@ -373,6 +380,7 @@ var GameFrame;
         comment.innerHTML = "Score:" + score;
         comment.innerHTML += "<br/> Highscore:" + localStorage["highscore"];
         Physics.util.ticker.stop();
+        world.destroy();
     }
 
     // Increment the score
@@ -386,7 +394,6 @@ var GameFrame;
 
     // Restart the game and physics
     GameFrame.prototype.init = function() {
-        started = true;
 
         // Hide modal
         modal.classList = "hidden";
