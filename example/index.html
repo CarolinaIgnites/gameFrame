@@ -22,6 +22,38 @@
                 position: absolute;
             }
 
+            #modal {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+            }
+
+            #box {
+                width: 500px;
+                margin: 100px auto 0 auto;
+                padding: 20px;
+                background-color: #FFF;
+            }
+
+            #backdrop {
+                width: 100%;
+                height: 100%;
+                background-color: #333;
+                opacity: 0.4;
+                position: absolute;
+                z-index: -1;
+                left: 0;
+                top: 0;
+            }
+
+            #button {
+                margin: 25px auto;
+            }
+
+            #viewport {
+                z-index: -1 !important;
+            }
+
             * {
                 margin: 0;
                 padding: 0;
@@ -30,6 +62,7 @@
                 width:100%;
                 height: 100%;
             }
+
         </style>
     </head>
     <body>
@@ -46,6 +79,7 @@
     </svg>
 
 
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PhysicsJS/0.7.0/physicsjs-full.min.js"></script>
     <script src="interactive-custom.js"></script>
     <script type="text/javascript">
@@ -126,7 +160,24 @@
         let context = clipboard.getContext("2d");
         let scoreboard = document.createElement("div");
         scoreboard.id = "scoreboard";
+
+        let modal = document.createElement("div");
+        modal.id = "modal";
+        modal.innerHTML =`
+
+
+        <div id="box">
+            <h1 id="modal-title"></h1>
+            <div id="comment"></div>
+            <button type="button" id="button" class="btn btn-primary">Play game</button>
+        </div>
+        <div id="backdrop"></div>
+
+        `
+
         document.body.appendChild(scoreboard);
+        document.body.appendChild(modal);
+
 
 
         let clip = {
@@ -241,7 +292,6 @@
         }, function(w){
 
             world = w;
-
             for (var i = 0; i < children.length; i++) {
                 buildObj(children[i]);
             }
@@ -354,22 +404,37 @@
             keys[getkey(e.keyCode)] = false;
         });
 
-        var _score = 0;        
+        var _score = 0;
 
         let score = function(value){
             _score += value || 0;
-            if(score > localStorage["highscore"]){
-                localStorage.setItem("highscore",_score);
+            if(_score > localStorage["highscore"]){
+                localStorage.setItem("highscore", _score);
             }
-            scoreboard.innerHTML = "Score: "+ _score;
+            scoreboard.innerHTML = "Score: " + _score;
+        }
+
+        let start= function(name, comment){
+            document.getElementById("modal-title").innerHTML = name;
+            document.getElementById("comment").innerHTML = comment;
+        }
+
+        let gameover = function(comment){
+            document.getElementById("modal-title").innerHTML = "Gameover";
+            let score = document.getElementById("comment");
+            score.innerHTML = "Score:" + _score;
+            score.innerHTML += "<br/> Highscore:" + localStorage["highscore"];
+            Physics.util.ticker.stop();
         }
 
         score(0);
 
+        start();
+
         // -------- User defined
 
         collision("#floor", "#ball", function(data, lookup){
-            alert("Game over")
+            gameover();
         })
 
         collision(".block", "#ball", function(data, lookup){
