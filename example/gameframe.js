@@ -210,7 +210,7 @@ var GameFrame;
     let physics = function(){
         Physics({
             timestep: 1000.0 / 160, // recommended
-            maxIPF: 2,
+            maxIPF: 16,
         }, function(w){
 
             // Global scope

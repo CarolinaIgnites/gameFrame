@@ -11,13 +11,13 @@
     <body>
 
     <svg id="game">
-            <circle id="ball" class="movable" vy=.5 vx=.3 cx=250 cy=150 r=70 img="http://i0.kym-cdn.com/entries/icons/facebook/000/013/564/aP2dv.jpg"> </circle>
-            <rect id="player" class="static" width="500" height="50" x=300 y=750 img="rainbow.png"> </rect>
+            <circle id="ball" class="movable" vy=.5 vx=.3 cx=250 cy=150 r=70 img="doge.jpg"> </circle>
+            <rect id="player" class="static" width="250" height="50" x=300 y=750 img="rainbow.png"> </rect>
             <rect id="floor" class="static" width="2000" height="50" x=1000 y=800> </rect>
     </svg>
 
     <svg id="templates">
-        <rect class="static block" width="100" height="50" x=25 y=25> </rect>
+        <rect class="static block" width="100" height="50" x=25 y=25 img="wow.png"> </rect>
     </svg>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PhysicsJS/0.7.0/physicsjs-full.min.js"></script>
@@ -25,6 +25,9 @@
     <script src="gameframe.js"></script>
 
     <script type="text/javascript">
+
+        let count = 10;
+        let blocks = 0;
 
         new GameFrame({
                 "name": "Doge out",
@@ -37,6 +40,11 @@
 
             },function(gf){
 
+            wow = function(seed){
+                gf.template(".block", seed * 100 + (100 * Math.random() - 50), 50 + 200 * Math.random());
+                blocks +=1;
+            }
+
             gf.collision("#floor", "#ball", function(data, lookup){
                 gf.gameOver();
             })
@@ -44,14 +52,15 @@
             gf.collision(".block", "#ball", function(data, lookup){
                 gf.remove(data[".block"]);
                 gf.score(10);
+                blocks -= 1;
             })
 
             gf.registerKeys("#player", {
                 'right': function(player, lookup){
-                    player.state.pos.x += 25;
+                    player.state.pos.x += 30;
                 },
                 'left': function(player, lookup){
-                    player.state.pos.x -= 25;
+                    player.state.pos.x -= 30;
                 }
             })
 
@@ -71,11 +80,13 @@
             })
 
             gf.registerLoops(function(lookup){
-                // Do stuff
+                if(blocks < count/2){
+                    wow((Math.random()*count) | 0);
+                }
             });
 
-            for (let i = 0; i < 10; i++) {
-                gf.template(".block", i * 100, 50);
+            for (let i = 0; i < count; i++) {
+                wow(i);
             }
         });
 
