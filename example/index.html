@@ -1,12 +1,3 @@
-<!-- TODO: 
-        x Templating
-        - A Start modal
-        - A Gameover Modal
-        x Cookies fo highscore
-        x Loop registering
-        - Clean up
--->
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -14,63 +5,14 @@
         <title>Game Frame Example</title>
         <meta name="description" content="TODO"/>
         <meta name="viewport" content="width=device-width" />
-        <style type="text/css">
-            #game, #templates {
-                display: none;
-            }
-            #scoreboard {
-                position: absolute;
-            }
-
-            #modal {
-                position: absolute;
-                width: 100%;
-                height: 100%;
-            }
-
-            #box {
-                width: 500px;
-                margin: 100px auto 0 auto;
-                padding: 20px;
-                background-color: #FFF;
-            }
-
-            #backdrop {
-                width: 100%;
-                height: 100%;
-                background-color: #333;
-                opacity: 0.4;
-                position: absolute;
-                z-index: -1;
-                left: 0;
-                top: 0;
-            }
-
-            #button {
-                margin: 25px auto;
-            }
-
-            #viewport {
-                z-index: -1 !important;
-            }
-
-            * {
-                margin: 0;
-                padding: 0;
-            }
-            html, body {
-                width:100%;
-                height: 100%;
-            }
-
-        </style>
+        <link href="gameframe.css" rel="stylesheet">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     </head>
     <body>
 
-
     <svg id="game">
             <circle id="ball" class="movable" vy=.5 vx=.3 cx=250 cy=150 r=70 img="http://i0.kym-cdn.com/entries/icons/facebook/000/013/564/aP2dv.jpg"> </circle>
-            <rect id="player" class="static" width="500" height="50" x=300 y=750> </rect>
+            <rect id="player" class="static" width="500" height="50" x=300 y=750 img="rainbow.png"> </rect>
             <rect id="floor" class="static" width="2000" height="50" x=1000 y=800> </rect>
     </svg>
 
@@ -78,401 +20,64 @@
         <rect class="static block" width="100" height="50" x=25 y=25> </rect>
     </svg>
 
-
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PhysicsJS/0.7.0/physicsjs-full.min.js"></script>
     <script src="interactive-custom.js"></script>
+    <script src="gameframe.js"></script>
+
     <script type="text/javascript">
 
-        let game = document.getElementById('game');
-        let templates = document.getElementById('templates');
-        let children = game.children;
+        new GameFrame({
+                "name": "Doge out",
+                "instructions": `Hit the left, right arrow keys to 
+                    move the platform. Hit the up down arrow keys
+                    to spin the ball.`,
+                "boundaries": true,
+                "impulse": true,
+                "gravity": false,
 
-        var collisions = {};
+            },function(gf){
 
-        let keyhash = function(A,B){
-            return [A, B].sort().join();
-        }
+            gf.collision("#floor", "#ball", function(data, lookup){
+                gf.gameOver();
+            })
 
-        let collision = function(A,B,f){
-            var key = keyhash(A,B);
-            collisions[key] = f;
-        }
+            gf.collision(".block", "#ball", function(data, lookup){
+                gf.remove(data[".block"]);
+                gf.score(10);
+            })
 
-        let keyEvents = {};
-
-        let registerKeys = function(id, keys){
-            for (var key in keys) {
-                if(!(key in keyEvents)){
-                    keyEvents[key] = {};
+            gf.registerKeys("#player", {
+                'right': function(player, lookup){
+                    player.state.pos.x += 25;
+                },
+                'left': function(player, lookup){
+                    player.state.pos.x -= 25;
                 }
-                keyEvents[key][id] = keys[key];
-            }
-        }
+            })
 
-        let loops = [];
-
-        let registerLoops = function(f){
-            loops[loops.length] = f;
-        }
-
-        let taxonomy = {
-            "circle" : function(el){
-                return Physics.body("circle",{
-                    name: el.classList.contains("movable") ? "movable" : "",
-                    treatment: el.classList.contains("static") ? "static" : "dynamic",
-                    x: (el.attributes["cx"] || el.attributes["x"] || 0).value | 0,
-                    y: (el.attributes["cy"] || el.attributes["y"] || 0).value | 0,
-                    radius: (el.attributes["r"] || 0).value | 0,
-                    vy: (el.attributes["vy"] || 0).value,
-                    vx: (el.attributes["vx"] || 0).value,
-                });
-            },
-            "rect" : function(el){
-                return Physics.body("rectangle",{
-                    name: el.classList.contains("movable") ? "movable" : "",
-                    treatment: el.classList.contains("static") ? "static" : "dynamic",
-                    width: (el.attributes["width"] || 0).value | 0,
-                    height: (el.attributes["height"] || 0).value | 0,
-                    x: (el.attributes["x"] || 0).value | 0,
-                    y: (el.attributes["y"] || 0).value | 0,
-                    vy: (el.attributes["vy"] || 0).value,
-                    vx: (el.attributes["vx"] || 0).value,
-                });
-            },
-            "g" : function(el){
-                var contained = [];
-                for(var i = 0; i < el.children.length; i++){
-                    contained[i] = createObj(el.children[i]);
+            gf.registerKeys("#ball", {
+                'up': function(player, lookup){
+                    player.state.angular.vel += .01;
+                },
+                'down': function(player, lookup){
+                    player.state.angular.vel -= .01;
                 }
-                if (contained.length == 0) return;
-                return Physics.body("compound",{
-                    name: "movable" in el.classList ? "movable" : "",
-                    //treatment: el.classList.contains("static") ? "static" : "dynamic",
-                    x: (el.attributes["x"] || 0).value | 0,
-                    y: (el.attributes["y"] || 0).value | 0,
-                    children: contained
-                });
-            }
-        };
+            })
 
-        let clipboard = document.createElement("canvas");
-        let context = clipboard.getContext("2d");
-        let scoreboard = document.createElement("div");
-        scoreboard.id = "scoreboard";
-
-        let modal = document.createElement("div");
-        modal.id = "modal";
-        modal.innerHTML =`
-
-
-        <div id="box">
-            <h1 id="modal-title"></h1>
-            <div id="comment"></div>
-            <button type="button" id="button" class="btn btn-primary">Play game</button>
-        </div>
-        <div id="backdrop"></div>
-
-        `
-
-        document.body.appendChild(scoreboard);
-        document.body.appendChild(modal);
-
-
-
-        let clip = {
-            "rect": (obj, img)=>{
-                return function(){
-
-                    // Adjust to size
-                    clipboard.width = obj.width;
-                    clipboard.height = obj.height;
-
-                    // scale. forget aspect ratio
-                    context.drawImage(img, 0, 0, img.width, img.height,
-                                    0,0, obj.width, obj.height);
-
-                    // Set the object src
-                    obj.view.src = clipboard.toDataURL("image/png");
+            gf.registerKeys(".block", {
+                'click': function(block, lookup){
+                    gf.remove(block);
                 }
-            },
-            "circle": (obj, img)=>{
-                return function(){
+            })
 
-                    let radius = obj.geometry.radius;
-
-                    // Adjust to size
-                    clipboard.width = radius * 2;
-                    clipboard.height = radius * 2;
-
-                    context.save();
-                    context.arc(radius, radius, radius, 0, 2 * Math.PI, false);
-                    context.clip();
-
-                    // scale. forget aspect ratio
-                    context.drawImage(img, 0, 0, img.width, img.height,
-                                    0,0, radius * 2, radius * 2);
-
-                    // Set the object src
-                    obj.view.src = clipboard.toDataURL("image/png");
-                }
-            }
-        }
-
-        let createObj = function(el){
-            let type = el.nodeName.toLowerCase();
-            let f = taxonomy[type];
-            if(f == undefined){
-                console.warn("Woops, element " + type + " not known.");
-                return;
-            }
-            let obj = f(el)
-            let src = (el.attributes["img"] || 0).value;
-            if(src && clip[type]){
-                let img = new Image();
-                obj.view = new Image();
-                img.setAttribute('crossOrigin', 'anonymous');
-                img.onload = clip[type](obj, img);
-                img.src = src;
-            }
-            return obj;
-        }
-
-        var world;
-
-        let buildObj = function(el){
-            var obj = createObj(el);
-            if(obj){
-                var ids = [];
-                if(!el.id){
-                    el.id = "generated_" + (seed++);
-                }
-                lookup["#" + el.id] = obj;
-                ids[ids.length] = "#" + el.id;
-                for (var j = 0; j < el.classList.length; j++) {
-                    var c = "." + el.classList[j];
-                    if(!(c in lookup)){
-                        lookup[c] = []
-                    }
-                    lookup[c][lookup[c].length] = obj;
-                    ids[ids.length] = c;
-                }
-                el.classList;
-                obj.ids = ids;
-                world.add(obj);
-            }
-        }
-
-        let template = function(id, x, y){
-            var el = templates.querySelector(id);
-            el.setAttribute('x', (x || el.attributes["x"]) | 0);
-            el.setAttribute('y', (y || el.attributes["y"]) | 0);
-            buildObj(el);
-        }
-
-        var viewportBounds = Physics.aabb(0, 0, window.innerWidth, window.innerHeight)
-        var edgeBounce = Physics.behavior('edge-collision-detection', {
-            aabb: viewportBounds
-            ,restitution: 0.99
-            ,cof: 1.0
-        });
-
-        var lookup = {};
-        var seed = 0;
-
-        var remove = function(obj){
-            obj._world.remove(obj);
-        }
-
-        Physics({
-            // set the timestep
-            timestep: 1000.0 / 160,
-            // maximum number of iterations per step
-            maxIPF: 2,
-        }, function(w){
-
-            world = w;
-            for (var i = 0; i < children.length; i++) {
-                buildObj(children[i]);
-            }
-            console.log(lookup);
-            var renderer = Physics.renderer('canvas', {
-                el: 'viewport',
-                width: 500,
-                height: 300,
-                meta: false, // don't display meta data
+            gf.registerLoops(function(lookup){
+                // Do stuff
             });
 
-            // add the renderer
-            world.add(renderer);
-            world.on('step', function(){
-
-                for (var i = 0; i < loops.length; i++) {
-                    loops[i](lookup);
-                }
-                // Note: equivalent to just calling world.render() after world.step()
-                world.render();
-            });
-
-            // collisions
-            world.on('collisions:detected', function(data){
-                var col;
-                for (var i = data.collisions.length - 1; i >= 0; i--) {
-                    col = data.collisions[i];
-                    if(!(col.bodyA.ids && col.bodyB.ids)) continue;
-                    for (var j = 0; j < col.bodyA.ids.length; j++) {
-                        for (var k = 0; k < col.bodyB.ids.length; k++) {
-                            var hash = keyhash(col.bodyA.ids[j], col.bodyB.ids[k]);
-                            if(hash in collisions) {
-                                datum = {};
-                                datum[col.bodyA.ids[j]] = col.bodyA;
-                                datum[col.bodyB.ids[k]] = col.bodyB;
-                                collisions[hash](datum);
-                            }
-                        }
-                    }
-                }
-            });
-
-            // collisions
-            world.on('interact:click', function(data){
-                var key = "click";
-                console.log("Here")
-                if(key in keyEvents){
-                    for (var id in keyEvents[key]) {
-                        keyEvents[key][id](data.body, lookup);
-                    }
-                }
-
-            });
-
-            world.add([
-                Physics.behavior('body-collision-detection', { checkAll: false }),
-                Physics.behavior('sweep-prune'),
-                Physics.behavior('body-impulse-response'),
-                //Physics.behavior('constant-acceleration'),
-                edgeBounce,
-                Physics.behavior('interactive-custom', { el: renderer.el }).applyTo(world.find({ name: 'movable' }))
-            ]);
-
-            // subscribe to ticker to advance the simulation
-            Physics.util.ticker.on(function( time, dt ){
-                world.step(time);
-                //console.log("aye")
-            });
-
-            // start the ticker
-            Physics.util.ticker.start();
-
-
-            // resize events
-            window.addEventListener('resize', function () {
-
-                // as of 0.7.0 the renderer will auto resize... so we just take the values from the renderer
-                viewportBounds = Physics.aabb(0, 0, renderer.width, renderer.height);
-                // update the boundaries
-                edgeBounce.setAABB(viewportBounds);
-
-            }, true);
-        });
-
-        var keys = {};
-        var special = {
-            38: "up",
-            40: "down",
-            37: "left",
-            39: "right",
-        }
-
-        let getkey = function(code){
-            if(code in special){
-                return special[code];
-            }
-            return String.fromCharCode(code);
-        }
-
-        document.addEventListener('keydown', function(e){
-            var key = getkey(e.keyCode);
-            keys[key] = true;
-            if(key in keyEvents){
-                for (var id in keyEvents[key]) {
-                    keyEvents[key][id](lookup[id]);
-                }
+            for (let i = 0; i < 10; i++) {
+                gf.template(".block", i * 100, 50);
             }
         });
-        document.addEventListener('keyup', function(e){
-            keys[getkey(e.keyCode)] = false;
-        });
-
-        var _score = 0;
-
-        let score = function(value){
-            _score += value || 0;
-            if(_score > localStorage["highscore"]){
-                localStorage.setItem("highscore", _score);
-            }
-            scoreboard.innerHTML = "Score: " + _score;
-        }
-
-        let start= function(name, comment){
-            document.getElementById("modal-title").innerHTML = name;
-            document.getElementById("comment").innerHTML = comment;
-        }
-
-        let gameover = function(comment){
-            document.getElementById("modal-title").innerHTML = "Gameover";
-            let score = document.getElementById("comment");
-            score.innerHTML = "Score:" + _score;
-            score.innerHTML += "<br/> Highscore:" + localStorage["highscore"];
-            Physics.util.ticker.stop();
-        }
-
-        score(0);
-
-        start();
-
-        // -------- User defined
-
-        collision("#floor", "#ball", function(data, lookup){
-            gameover();
-        })
-
-        collision(".block", "#ball", function(data, lookup){
-            remove(data[".block"]);
-            score(10);
-        })
-
-        registerKeys("#player", {
-            'right': function(player, lookup){
-                player.state.pos.x += 25;
-            },
-            'left': function(player, lookup){
-                player.state.pos.x -= 25;
-            }
-        })
-
-        registerKeys("#ball", {
-            'up': function(player, lookup){
-                player.state.angular.vel += .01;
-            },
-            'down': function(player, lookup){
-                player.state.angular.vel -= .01;
-            }
-        })
-
-        registerKeys(".block", {
-            'click': function(block, lookup){
-                remove(block);
-            }
-        })
-
-        registerLoops(function(lookup){
-            // Do stuff
-        });
-
-        for (var i = 0; i < 10; i++) {
-            template(".block", i * 100, 50);
-        }
 
     </script>
 
