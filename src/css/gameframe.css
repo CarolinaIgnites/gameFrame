@@ -33,10 +33,6 @@
     margin: 25px auto;
 }
 
-#viewport {
-    z-index: -1 !important;
-}
-
 .hidden {
     display: none;
 }
