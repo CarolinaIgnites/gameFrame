@@ -263,10 +263,9 @@ var GameFrame;
                 let key = "click";
                 if(key in keyEvents){
                     for (let id in keyEvents[key]) {
-                        keyEvents[key][id](data.body, lookup);
+                        keyEvents[key][id](lookup[id], lookup);
                     }
                 }
-
             });
 
             // Add physics
@@ -384,6 +383,7 @@ var GameFrame;
     // Kill the game and launch modal
     GameFrame.prototype.gameOver = function(){
         modal.classList = "";
+        document.getElementById("viewport").style = "position:absolute;z-index: -1 !important;"
         document.getElementById("modal-title").innerHTML = "Gameover";
         let comment = document.getElementById("comment");
         comment.innerHTML = "Score:" + score;

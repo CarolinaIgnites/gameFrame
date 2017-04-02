@@ -104,10 +104,9 @@ Physics.behavior('interactive-custom', function( parent ){
                         body = self._world.findOne({ $at: new Physics.vector( pos.x, pos.y )});
                         if(body){
                             pos.body = body;
-                            self._world.emit('interact:click', pos);
-                        }else {
                             self._world.emit('interact:poke', pos);
                         }
+                        self._world.emit('interact:click', pos);
                     }
                 }
             };

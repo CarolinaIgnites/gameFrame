@@ -51,7 +51,12 @@
             gf.registerKeys("#player", {
                 'up': function(player, lookup){
                     player.state.vel.y -= .5;
-                }
+                },
+                'click': function(player, lookup){
+                    console.log("What?")
+                    player.state.vel.y -= .5;
+                },
+
             })
 
             gf.registerLoops(function(lookup){
