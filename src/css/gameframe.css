@@ -13,6 +13,7 @@
 
 #box {
     width: 500px;
+    max-width: 100%;
     margin: 100px auto 0 auto;
     padding: 20px;
     background-color: #FFF;

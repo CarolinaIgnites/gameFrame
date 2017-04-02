@@ -138,6 +138,17 @@ var GameFrame;
         return String.fromCharCode(code);
     }
 
+    // Setup orientation for mobile
+    let orient = function(){
+
+        // Paul warned us: "I am telling you this as a friend. 
+        // It exists. It is a thing, but it is a hack. 
+        // Please don't use it."
+        window.scrollTo(0,1);
+        document.body.webkitRequestFullScreen();
+        // document.getElementById("viewport").requestFullscreen();
+    }
+
     // Render dom to page
     let buildDom = function(){
         scoreboard.id = "scoreboard";
@@ -209,8 +220,6 @@ var GameFrame;
     // start off all the physics
     let physics = function(){
         Physics({
-//            timestep: 1000.0 / 160, // recommended
-//            maxIPF: 16,
         }, function(w){
 
             // Global scope
@@ -398,6 +407,9 @@ var GameFrame;
         // Hide modal
         modal.classList = "hidden";
 
+        // Set orientation
+        orient();
+
         // reset vars
         score = 0
         collisions = {};
@@ -405,6 +417,7 @@ var GameFrame;
         loops = [];
         lookup = {};
 
+        // Start the game
         physics();
         GameFrame.prototype.score(0);
         GameFrame.prototype.game(this);
