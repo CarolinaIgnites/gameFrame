@@ -79,7 +79,7 @@ Physics.behavior('interactive-custom', function( parent ){
                 if ( self._world ){
                     body = self._world.findOne({ $at: new Physics.vector( pos.x, pos.y ), $in: self.getTargets() });
                     
-                    
+                    debugger;
 
                     if ( body ){
                         // we're trying to grab a body
