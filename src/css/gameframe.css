@@ -13,7 +13,6 @@
 
 #box {
     width: 500px;
-    max-width: 100%;
     margin: 100px auto 0 auto;
     padding: 20px;
     background-color: #FFF;
@@ -29,18 +28,21 @@
     left: 0;
     top: 0;
 }
-
 #button {
     margin: 25px auto;
 }
-
+#viewport {
+    background-color: #fff;
+}
 .hidden {
     display: none;
 }
-
 * {
     margin: 0;
     padding: 0;
+}
+*:fullscreen, *:-webkit-full-screen, *:-moz-full-screen {
+    background-color: rgba(255,255,255,0);
 }
 html, body {
     width:100%;

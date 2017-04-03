@@ -138,6 +138,29 @@ var GameFrame;
         return String.fromCharCode(code);
     }
 
+    let resize = function () {
+        let canvas = document.getElementById("viewport");
+        if(!canvas) return;
+
+        // Our canvas must cover full height of screen
+        // regardless of the resolution
+        let height = window.innerHeight;
+
+        // So we need to calculate the proper scaled width
+        // that should work well with every resolution
+        let ratio = canvas.width/canvas.height;
+        let width = height * ratio;
+        
+        canvas.style.width = width+'px';
+        canvas.style.height = height+'px';
+
+        // if boundaries and running, update the boundaries
+        if(started && GameFrame.prototype.boundaries){
+            viewportBounds = Physics.aabb(0, 0, renderer.width, renderer.height);
+            edgeBounce.setAABB(viewportBounds);
+        }
+    }
+
     // Setup orientation for mobile
     let orient = function(){
 
@@ -146,7 +169,6 @@ var GameFrame;
         // Please don't use it."
         window.scrollTo(0,1);
         document.body.webkitRequestFullScreen();
-        // document.getElementById("viewport").requestFullscreen();
     }
 
     // Render dom to page
@@ -184,11 +206,8 @@ var GameFrame;
         let obj = f(el)
         let src = (el.attributes["img"] || 0).value;
         if(src && clip[type]){
-            let img = new Image();
-            obj.view = new Image();
-            img.setAttribute('crossOrigin', 'anonymous');
-            img.onload = clip[type](obj, img);
-            img.src = src;
+            obj.gf_type = type;
+            GameFrame.prototype.image(obj, src);
         }
         return obj;
     }
@@ -233,6 +252,9 @@ var GameFrame;
             renderer = Physics.renderer('canvas', {
                 el: 'viewport',
                 meta: false, // don't display meta data
+                width:1366,
+                height:768,
+                autoResize: false
             });
 
             // add the renderer
@@ -316,13 +338,7 @@ var GameFrame;
     });
 
     // Responsive?
-    window.addEventListener('resize', function () {
-        // if boundaries and running, update the boundaries
-        if(started && GameFrame.prototype.boundaries){
-            viewportBounds = Physics.aabb(0, 0, renderer.width, renderer.height);
-            edgeBounce.setAABB(viewportBounds);
-        }
-    }, true);
+    window.addEventListener('resize', resize, true);
 
     // Build out the GameFrame class
     // Construct sets up state
@@ -380,10 +396,22 @@ var GameFrame;
         buildObj(el);
     }
 
+    GameFrame.prototype.image = function(obj, src){
+        let type = obj.gf_type
+        if(!type) return;
+
+        let img = new Image();
+        obj.view = new Image();
+        img.setAttribute('crossOrigin', 'anonymous');
+        img.onload = clip[type](obj, img);
+        img.src = src;
+    }
+
+
     // Kill the game and launch modal
     GameFrame.prototype.gameOver = function(){
         modal.classList = "";
-        document.getElementById("viewport").style = "position:absolute;z-index: -1 !important;"
+        document.getElementById("viewport").remove();
         document.getElementById("modal-title").innerHTML = "Gameover";
         let comment = document.getElementById("comment");
         comment.innerHTML = "Score:" + score;
@@ -421,6 +449,7 @@ var GameFrame;
         physics();
         GameFrame.prototype.score(0);
         GameFrame.prototype.game(this);
+        resize();
     };
 
 })();

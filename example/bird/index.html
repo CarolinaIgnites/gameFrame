@@ -15,8 +15,8 @@
 
     <svg id="game">
             <rect class="bound static" width="2000" height="50" x=1000 y=0> </rect>
-            <circle id="player" r="50" x=500 y=350 img="bird.png"> </circle>
-            <rect class="bound static" width="2000" height="50" x=1000 y=800> </rect>
+            <circle id="player" r="50" x=500 y=350 img="bird0.gif"> </circle>
+            <rect class="bound static" width="2000" height="50" x=1000 y=768> </rect>
     </svg>
 
     <svg id="templates">
@@ -39,41 +39,34 @@
                 "impulse": true,
                 "gravity": true,
             },function(gf){
-
-            gf.collision(".bound", "#player", function(data, lookup){
-                gf.gameOver();
-            })
-
-            gf.collision(".block", "#player", function(data, lookup){
-                gf.gameOver();
-            })
-
-            gf.registerKeys("#player", {
-                'up': function(player, lookup){
-                    player.state.vel.y -= .5;
-                },
-                'click': function(player, lookup){
-                    console.log("What?")
-                    player.state.vel.y -= .5;
-                },
-
-            })
-
-            gf.registerLoops(function(lookup){
-                for (let obj of lookup[".block"]) {
-                    if(obj.state.pos.x > 1000){
-                        gf.remove(obj);
-                        gf.template(".block", 0, Math.random() * 400)
-                        gf.score(10);
-                    }else{
-                        obj.state.pos.x += 4;
+                let image = 0;
+                gf.collision(".bound", "#player", function(data, lookup){
+                    gf.gameOver();
+                })
+                gf.collision(".block", "#player", function(data, lookup){
+                    gf.gameOver();
+                })
+                gf.registerKeys("#player", {
+                    'click': function(player, lookup){
+                        player.state.vel.y -= .5;
+                        image = (image + 1) % 4;
+                        gf.image(player, "bird" + image + ".gif");
+                    },
+                })
+                gf.registerLoops(function(lookup){
+                    for (let obj of lookup[".block"]) {
+                        if(obj.state.pos.x > 1000){
+                            gf.remove(obj);
+                            gf.template(".block", 0, Math.random() * 400)
+                            gf.score(10);
+                        }else{
+                            obj.state.pos.x += 4;
+                        }
                     }
-                }
-            });
-
-            // Start off with random points
-            gf.template(".block", -500, Math.random() * 400)
-            gf.template(".block", 0, Math.random() * 400)
+                });
+                // Start off with random points
+                gf.template(".block", -500, Math.random() * 400)
+                gf.template(".block", 0, Math.random() * 400)
         });
 
     </script>
