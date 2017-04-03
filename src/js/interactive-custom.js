@@ -78,11 +78,9 @@ Physics.behavior('interactive-custom', function( parent ){
 
                 if ( self._world ){
                     body = self._world.findOne({ $at: new Physics.vector( pos.x, pos.y ), $in: self.getTargets() });
-                    
-                    debugger;
 
+                    // we're trying to grab a body
                     if ( body ){
-                        // we're trying to grab a body
 
                         // fix the body in place
                         prevTreatment = body.treatment;
@@ -99,7 +97,7 @@ Physics.behavior('interactive-custom', function( parent ){
                         pos.body = body;
                         self._world.emit('interact:grab', pos);
 
-                    } else {
+                    } else if(e.type == "mousedown"){
 
                         body = self._world.findOne({ $at: new Physics.vector( pos.x, pos.y )});
                         if(body){

@@ -77,8 +77,8 @@
             })
 
             gf.registerKeys(".block", {
-                'click': function(block, lookup){
-                    gf.remove(block);
+                'poke': function(block, lookup){
+                    if(block) gf.remove(block);
                 }
             })
 

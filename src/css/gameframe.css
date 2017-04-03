@@ -12,6 +12,7 @@
 }
 
 #box {
+    max-width: 100%;
     width: 500px;
     margin: 100px auto 0 auto;
     padding: 20px;
