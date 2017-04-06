@@ -12,7 +12,7 @@
 About
 ===
 
-Gameframe is a wrapper for [https://github.com/wellcaffeinated/PhysicsJS/wiki](PhysicsJS), with the idea of making basic game development as simple as possible. The project was developed for Highschool out reach at RidgeView Highscool, as part of the University of South Carolina, Google IgniteCS program. The results of this program can be found at [https://www.carolinaignites.org](www.carolinaignites.org)
+Gameframe is a wrapper for [PhysicsJS](https://github.com/wellcaffeinated/PhysicsJS/wiki), with the idea of making basic game development as simple as possible. The project was developed for Highschool out reach at RidgeView Highscool, as part of the University of South Carolina, Google IgniteCS program. The results of this program can be found at [www.carolinaignites.org](https://www.carolinaignites.org)
 
 Starting out
 ===
@@ -103,6 +103,7 @@ All elements under this can be added by the `GameFrame.prototype.template` funct
 ### Object types
 #### Rectangle
 `<rect width="2000" height="50" x=1000 y=0> </rect>`
+
 Creates a rectangle object
 
     id - string - CSS identifier referenced by #<id> in GameFrame lookup (optional)
@@ -121,6 +122,7 @@ Creates a rectangle object
 
 #### Circle
 `<circle r="50" x=500 y=350> </circle>`
+
 Creates a circle object
 
     id - string - CSS identifier referenced by #<id> in GameFrame lookup (optional)
@@ -137,6 +139,7 @@ Creates a circle object
 
 #### Group
 `<g x=500 y=350> </g>`
+
 Creates a group of objects, where everything nested inside the group is considered as part of one object
 
     id - string - CSS identifier referenced by #<id> in GameFrame lookup (optional)
@@ -268,7 +271,7 @@ Javascript
 
 ---
 
-// ***score*** - Increment the score
+#### ***score*** - Increment the score
 `GameFrame.prototype.score = function(value)`
 
     value - number - Adds this number to the total score
