@@ -155,14 +155,14 @@ Physics.behavior('interactive-custom', function( parent ){
                 }
             };
 
-            if(!mobile) this.el.addEventListener('mousedown', grab);
-            else this.el.addEventListener('touchstart', grab);
+            this.el.addEventListener('mousedown', grab);
+            // this.el.addEventListener('touchstart', grab);
 
-            if(!mobile) this.el.addEventListener('mousemove', move);
-            else this.el.addEventListener('touchmove', move);
+            this.el.addEventListener('mousemove', move);
+            // this.el.addEventListener('touchmove', move);
 
-            if(!mobile) this.el.addEventListener('mouseup', release);
-            else this.el.addEventListener('touchend', release);
+            this.el.addEventListener('mouseup', release);
+            // this.el.addEventListener('touchend', release);
         },
 
         // extended
