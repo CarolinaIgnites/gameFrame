@@ -163,17 +163,22 @@ var GameFrame;
 
     // Setup orientation for mobile
     let orient = function(){
-
         // Paul warned us: "I am telling you this as a friend. 
         // It exists. It is a thing, but it is a hack. 
         // Please don't use it."
         window.scrollTo(0,1);
-        document.body.webkitRequestFullScreen();
+        if(!GameFrame.prototype.debug)
+            document.body.webkitRequestFullScreen();
     }
 
     // Render dom to page
     let buildDom = function(){
+        // Create scoreboard
         scoreboard.id = "scoreboard";
+        document.body.appendChild(scoreboard);
+
+        // Create modal if needed
+        if(!GameFrame.prototype.modal) return;
         modal.id = "modal";
         modal.innerHTML =`
             <div id="box">
@@ -187,10 +192,8 @@ var GameFrame;
             <div id="backdrop"></div>
         `;
 
-        document.body.appendChild(scoreboard);
-        document.body.appendChild(modal);
-
         // Set internals
+        document.body.appendChild(modal);
         document.getElementById("modal-title").innerHTML = GameFrame.prototype.name;
         document.getElementById("comment").innerHTML = GameFrame.prototype.instructions;
     }
@@ -344,12 +347,17 @@ var GameFrame;
     // Construct sets up state
     GameFrame = function(settings, f){
 
+        // Set score to 0 if not exists
+        localStorage.setItem("highscore", (localStorage["highscore"] | 0));
+
         // Set settings
         GameFrame.prototype.name = settings["name"] || "GameFrame Game";
         GameFrame.prototype.instructions = settings["instructions"] || "instructions";
         GameFrame.prototype.boundaries = "boundaries" in settings ? settings["boundaries"] : true;
         GameFrame.prototype.impulse = "impulse" in settings ? settings["impulse"] : true;
         GameFrame.prototype.gravity = "gravity" in settings ? settings["gravity"] : false;
+        GameFrame.prototype.debug = "debug" in settings ? settings["debug"] : false;
+        GameFrame.prototype.modal = "modal" in settings ? settings["modal"] : true;
         GameFrame.prototype.game = f;
 
         // Create modal and other pieces
@@ -396,6 +404,7 @@ var GameFrame;
         buildObj(el);
     }
 
+    // Change the image of an object
     GameFrame.prototype.image = function(obj, src){
         let type = obj.gf_type
         if(!type) return;
