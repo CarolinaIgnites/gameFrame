@@ -179,7 +179,7 @@ Javascript
 
 ---
 
-#### Check for collisions between obj types
+#### ***collision*** - Check for collisions between obj types
 `GameFrame.prototype.collision = function(A,B,f)`
 
     A - string- CSS identifier for object
@@ -199,14 +199,14 @@ Javascript
 
 ---
 
-#### Kill the obj
+#### ***remove*** - Kill the obj
 `GameFrame.prototype.remove = function(obj)`
 
     obj - object - Physics Object to be deleted from the game
 
 ---
 
-#### Bind events
+#### ***registerKeys*** - Bind events
 `GameFrame.prototype.registerKeys = function(id, keys)`
 
 
@@ -235,14 +235,14 @@ Javascript
 
 ---
 
-#### On loop execution
+#### ***registerLoops*** - On loop execution
 `GameFrame.prototype.registerLoops = function(f)`
 
     f(lookup) - function - runs on everyloop
 
 ---
 
-#### Create a obj from a template
+#### ***template*** - Create a obj from a template
 `GameFrame.prototype.template = function(id, x, y)`
 
     id - string - CSS selector for template element
@@ -253,7 +253,7 @@ Javascript
 
 ---
 
-#### Change the image of an object
+#### ***image*** - Change the image of an object
 `GameFrame.prototype.image = function(obj, src)`
 
     obj - object - Physics Object to change image
@@ -262,13 +262,13 @@ Javascript
 
 ---
 
-#### Kill the game and launch modal
+#### ***gameOver*** - Kill the game and launch modal
 `GameFrame.prototype.gameOver = function()`
 
 
 ---
 
-// Increment the score
+// ***score*** - Increment the score
 `GameFrame.prototype.score = function(value)`
 
     value - number - Adds this number to the total score
