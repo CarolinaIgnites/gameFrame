@@ -20,7 +20,7 @@ Starting out
 Physics objecs are specificed in DOM, under the `<svg id="game">` element. The game frame object is initialized, a modal is opened, and the games can begin.
 
 Here is an example of flappy bird:
-```
+```html
 <link href="//www.carolinaignites.org/assets/css/gameframe.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PhysicsJS/0.7.0/physicsjs-full.min.js"></script>
 <script src="//www.carolinaignites.org/assets/js/interactive-custom.js"></script>
@@ -78,7 +78,8 @@ Here is an example of flappy bird:
             gf.template(".block", -500, Math.random() * 400)
             gf.template(".block", 0, Math.random() * 400)
     });
-</script>```
+</script>
+```
 
 
 Please refer to other examples for other uses.
@@ -161,7 +162,9 @@ Javascript
 #### Main initializer to start game
 `GameFrame = function(settings, f)`
 
-    settings - hashmap - Contains meta information for the game to start ```{
+    settings - hashmap - Contains meta information for the game to start 
+```json
+    {
         "name": "This is the name for your game",
         "instructions": `This exaplains your game`,
         "debug": false, // default false, this stop the game from fullscreen mode
@@ -169,7 +172,8 @@ Javascript
         "boundaries": true, // default true, this will cause collisions with edge of screen
         "impulse": true, // default true, this will allow for reactive collisions
         "gravity": false, // default false, this will cause a downwards pulling force on all objects
-}```
+    }
+```
 
     f(gf) - function - callback once game frame has initialized itself
 
@@ -183,12 +187,13 @@ Javascript
     B - string- CSS identifier for object
 
     f(data, lookup) - function - Handler for collision callback
-        data - Hashmap of objects collided eg. ```
+        data - Hashmap of objects collided eg. 
+```json
             data = {
                 "#obj": [Object],
                 ".obj": [Object]
             }
-    ```
+```
 
         lookup - Hashmap of all objects by CSS selectors
 
@@ -207,7 +212,8 @@ Javascript
 
     id - string - Element selector for object to respond to keys
 
-    keys - hashmap - hashmap of keys and the corresponding callbacks eg. ```
+    keys - hashmap - hashmap of keys and the corresponding callbacks eg. 
+```json
         {
             // Standard letter keys
             'a':function(obj, lookup){alert('a was pressed')},
@@ -223,7 +229,8 @@ Javascript
             // Click events
             'click': function(obj, lookup){alert('game was clicked');
             'poke': function(obj, lookup){alert('obj was clicked');
-        }```
+        }
+```
 
 
 ---
