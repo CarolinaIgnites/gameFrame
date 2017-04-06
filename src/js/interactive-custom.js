@@ -156,13 +156,8 @@ Physics.behavior('interactive-custom', function( parent ){
             };
 
             this.el.addEventListener('mousedown', grab);
-            // this.el.addEventListener('touchstart', grab);
-
             this.el.addEventListener('mousemove', move);
-            // this.el.addEventListener('touchmove', move);
-
             this.el.addEventListener('mouseup', release);
-            // this.el.addEventListener('touchend', release);
         },
 
         // extended
