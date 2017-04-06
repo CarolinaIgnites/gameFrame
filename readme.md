@@ -163,7 +163,7 @@ Javascript
 `GameFrame = function(settings, f)`
 
     settings - hashmap - Contains meta information for the game to start 
-```json
+```javascript
     {
         "name": "This is the name for your game",
         "instructions": `This exaplains your game`,
@@ -188,7 +188,7 @@ Javascript
 
     f(data, lookup) - function - Handler for collision callback
         data - Hashmap of objects collided eg. 
-```json
+```javascript
             data = {
                 "#obj": [Object],
                 ".obj": [Object]
@@ -213,7 +213,7 @@ Javascript
     id - string - Element selector for object to respond to keys
 
     keys - hashmap - hashmap of keys and the corresponding callbacks eg. 
-```json
+```javascript
         {
             // Standard letter keys
             'a':function(obj, lookup){alert('a was pressed')},
