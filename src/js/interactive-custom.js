@@ -1,11 +1,13 @@
 Physics.behavior('interactive-custom', function( parent ){
 
+    let mobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase());
+
     if ( !document ){
         // must be in node environment
         return {};
     }
 
-    var defaults = {
+    let defaults = {
             // the element to monitor
             el: null,
             // time between move events
@@ -16,7 +18,7 @@ Physics.behavior('interactive-custom', function( parent ){
             maxVel: { x: 5, y: 5 }
         }
         ,getElementOffset = function( el ){
-            var curleft = 0
+            let curleft = 0
                 ,curtop = 0
                 ;
 
@@ -30,7 +32,7 @@ Physics.behavior('interactive-custom', function( parent ){
             return { left: curleft, top: curtop };
         }
         ,getCoords = function( e ){
-            var offset = getElementOffset( e.target )
+            let offset = getElementOffset( e.target )
                 ,obj = ( e.changedTouches && e.changedTouches[0] ) || e
                 ,x = obj.pageX - offset.left
                 ,y = obj.pageY - offset.top
@@ -47,7 +49,7 @@ Physics.behavior('interactive-custom', function( parent ){
         // extended
         init: function( options ){
 
-            var self = this
+            let self = this
                 ,prevTreatment
                 ,time
                 ;
@@ -69,8 +71,8 @@ Physics.behavior('interactive-custom', function( parent ){
             }
 
             // init events
-            var grab = function grab( e ){
-                var pos = getCoords( e )
+            let grab = function grab( e ){
+                let pos = getCoords( e )
                     ,body
                     ;
 
@@ -78,11 +80,9 @@ Physics.behavior('interactive-custom', function( parent ){
 
                 if ( self._world ){
                     body = self._world.findOne({ $at: new Physics.vector( pos.x, pos.y ), $in: self.getTargets() });
-                    
-                    
 
+                    // we're trying to grab a body
                     if ( body ){
-                        // we're trying to grab a body
 
                         // fix the body in place
                         prevTreatment = body.treatment;
@@ -99,21 +99,20 @@ Physics.behavior('interactive-custom', function( parent ){
                         pos.body = body;
                         self._world.emit('interact:grab', pos);
 
-                    } else {
+                    } else if(e.type == "mousedown"){
 
                         body = self._world.findOne({ $at: new Physics.vector( pos.x, pos.y )});
                         if(body){
                             pos.body = body;
-                            self._world.emit('interact:click', pos);
-                        }else {
                             self._world.emit('interact:poke', pos);
                         }
+                        self._world.emit('interact:click', pos);
                     }
                 }
             };
 
-            var move = Physics.util.throttle(function move( e ){
-                var pos = getCoords( e )
+            let move = Physics.util.throttle(function move( e ){
+                let pos = getCoords( e )
                     ,state
                     ;
 
@@ -131,8 +130,8 @@ Physics.behavior('interactive-custom', function( parent ){
 
             }, self.options.moveThrottle);
 
-            var release = function release( e ){
-                var pos = getCoords( e )
+            let release = function release( e ){
+                let pos = getCoords( e )
                     ,body
                     ,dt = Math.max(Physics.util.ticker.now() - time, self.options.moveThrottle)
                     ;
@@ -157,13 +156,8 @@ Physics.behavior('interactive-custom', function( parent ){
             };
 
             this.el.addEventListener('mousedown', grab);
-            this.el.addEventListener('touchstart', grab);
-
             this.el.addEventListener('mousemove', move);
-            this.el.addEventListener('touchmove', move);
-
             this.el.addEventListener('mouseup', release);
-            this.el.addEventListener('touchend', release);
         },
 
         // extended
@@ -183,7 +177,7 @@ Physics.behavior('interactive-custom', function( parent ){
         // extended
         behave: function( data ){
 
-            var self = this
+            let self = this
                 ,state
                 ,dt = Math.max(data.dt, self.options.moveThrottle)
                 ;
