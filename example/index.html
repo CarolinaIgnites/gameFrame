@@ -366,6 +366,18 @@
 
         score(0);
 
+        var _score2 = 0;        
+
+        let score2 = function(value){
+            _score2 += value || 0;
+            if(score2 > localStorage["highscore2"]){
+                localStorage.setItem("highscore2",_score2);
+            }
+            scoreboard2.innerHTML = "Score 2: "+ _score2;
+        }
+
+        score2(0);
+
         // -------- User defined
 
         collision("#floor", "#ball", function(data, lookup){
