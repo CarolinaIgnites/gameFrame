@@ -8,6 +8,7 @@ var GameFrame;
     let templates = document.getElementById('templates');
     let scoreboard = document.createElement("div");
     let modal = document.createElement("div");
+    let style = document.createElement("style");
     let clipboard = document.createElement("canvas");
     let context = clipboard.getContext("2d");
     let children = game.children;
@@ -21,6 +22,10 @@ var GameFrame;
     let score = 0;
     let seed = 0;
 
+    // time vars
+    let t = 0;
+    let pt = 0;
+
     /// Global physics vars
     let world;
     let renderer;
@@ -29,8 +34,8 @@ var GameFrame;
     let viewportBounds = Physics.aabb(0, 0, window.innerWidth, window.innerHeight)
     let edgeBounce = Physics.behavior('edge-collision-detection', {
         aabb: viewportBounds
-        ,restitution: 0.99
-        ,cof: 1.0
+        ,restitution: (game.attributes["bounce"] || 0.5).value
+        ,cof: (game.attributes["friction"] || 0.5).value
     });
 
     // key references
@@ -54,6 +59,8 @@ var GameFrame;
                 radius: (el.attributes["r"] || 0).value | 0,
                 vy: (el.attributes["vy"] || 0).value,
                 vx: (el.attributes["vx"] || 0).value,
+                restitution: (el.attributes["bounce"] || 0.5).value,
+                cof: (el.attributes["friction"] || 0.5).value,
             });
         },
         "rect" : function(el){
@@ -66,6 +73,8 @@ var GameFrame;
                 y: (el.attributes["y"] || 0).value | 0,
                 vy: (el.attributes["vy"] || 0).value,
                 vx: (el.attributes["vx"] || 0).value,
+                restitution: (el.attributes["bounce"] || 0.5).value,
+                cof: (el.attributes["friction"] || 0.5).value,
             });
         },
         "g" : function(el){
@@ -166,9 +175,10 @@ var GameFrame;
         // Paul warned us: "I am telling you this as a friend. 
         // It exists. It is a thing, but it is a hack. 
         // Please don't use it."
-        window.scrollTo(0,1);
-        if(!GameFrame.prototype.debug)
+        if(!GameFrame.prototype.debug){
+            window.scrollTo(0,1);
             document.body.webkitRequestFullScreen();
+        }
     }
 
     // Render dom to page
@@ -176,6 +186,14 @@ var GameFrame;
         // Create scoreboard
         scoreboard.id = "scoreboard";
         document.body.appendChild(scoreboard);
+
+        // Create style element
+        // Set background
+        let src = (game.attributes["img"] || 0).value;
+        if(src){
+            style.innerHTML = "#viewport{background-image:url('"+src+"');background-size: cover;}";
+            document.body.appendChild(style);
+        }
 
         // Create modal if needed
         if(!GameFrame.prototype.modal) return;
@@ -306,15 +324,19 @@ var GameFrame;
 
             // Set up step
             world.on('step', function(){
+                let dt = t - pt;
                 for (let i = 0; i < loops.length; i++) {
-                    loops[i](lookup);
+                    loops[i](lookup, dt);
                 }
                 world.render();
             });
 
             // subscribe to ticker to advance the simulation
             if(!started){
-                Physics.util.ticker.on(function( time, dt ){
+                Physics.util.ticker.on(function(time){
+                    pt = t;
+                    t = time;
+                    if(pt == 0) pt = t;
                     world.step(time);
                 });
             }
