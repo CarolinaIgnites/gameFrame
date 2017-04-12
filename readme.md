@@ -93,7 +93,7 @@ HTML
 
 ### SVG wrappers
 #### Main game wrapper
-`<svg id="game" img="URI">`
+`<svg id="game" img="URI" bounce>`
 All elements under this will be rendered to the canvas
 
 #### Template wrapper
@@ -111,6 +111,10 @@ Creates a rectangle object
     class - string - CSS identifier referenced by .<class> in GameFrame lookup (optional)
 
     src - string URI - URI specifying initial image of the rectangle (optional)
+
+    bounce - float - the coefficent of restitution, from 0-1.0 (1 is most bouncy)
+
+    friction - float - the coefficent of friction, from 0-1.0 (1 is frictional)
 
     width - number - width of the object 
 
@@ -130,6 +134,10 @@ Creates a circle object
     class - string - CSS identifier referenced by .<class> in GameFrame lookup (optional)
 
     src - string URI - URI specifying initial image of the circle (optional)
+
+    bounce - float - the coefficent of restitution, from 0-1.0. 1 is most bouncy, default 0.5 (optional)
+
+    friction - float - the coefficent of friction, from 0-1.0. 1 is frictional, default 0.5 (optional)
 
     r - number - radius of the circle 
 

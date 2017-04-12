@@ -29,14 +29,6 @@ var GameFrame;
     /// Global physics vars
     let world;
     let renderer;
-    
-    // For boundary   
-    let viewportBounds = Physics.aabb(0, 0, window.innerWidth, window.innerHeight)
-    let edgeBounce = Physics.behavior('edge-collision-detection', {
-        aabb: viewportBounds
-        ,restitution: (game.attributes["bounce"] || 0.5).value
-        ,cof: (game.attributes["friction"] || 0.5).value
-    });
 
     // key references
     let keys = {};
@@ -46,6 +38,17 @@ var GameFrame;
         37: "left",
         39: "right",
     }
+
+    // helpers
+    let toFloat = (val,fallback)=>{return isNaN(val)?fallback:val;}
+
+    // For boundary   
+    let viewportBounds = Physics.aabb(0, 0, window.innerWidth, window.innerHeight)
+    let edgeBounce = Physics.behavior('edge-collision-detection', {
+        aabb: viewportBounds,
+        restitution: toFloat((game.attributes["bounce"] || 0).value, 0.5),
+        cof: toFloat((game.attributes["friction"] || 0).value, 0.5),
+    });
 
     // Objs for lookup
     // Turn svg to object
@@ -59,8 +62,8 @@ var GameFrame;
                 radius: (el.attributes["r"] || 0).value | 0,
                 vy: (el.attributes["vy"] || 0).value,
                 vx: (el.attributes["vx"] || 0).value,
-                restitution: (el.attributes["bounce"] || 0.5).value,
-                cof: (el.attributes["friction"] || 0.5).value,
+                restitution: toFloat((el.attributes["bounce"] || 0).value, 0.5),
+                cof: toFloat((el.attributes["friction"] || 0).value, 0.5),
             });
         },
         "rect" : function(el){
@@ -73,8 +76,8 @@ var GameFrame;
                 y: (el.attributes["y"] || 0).value | 0,
                 vy: (el.attributes["vy"] || 0).value,
                 vx: (el.attributes["vx"] || 0).value,
-                restitution: (el.attributes["bounce"] || 0.5).value,
-                cof: (el.attributes["friction"] || 0.5).value,
+                restitution: toFloat((el.attributes["bounce"] || 0).value, 0.5),
+                cof: toFloat((el.attributes["friction"] || 0).value, 0.5),
             });
         },
         "g" : function(el){
@@ -398,7 +401,7 @@ var GameFrame;
         world.removeBody(obj);
 
         delete lookup[obj.ids[0]];
-        for (var i = 1; i < obj.ids.length; i++) {
+        for (let i = 1; i < obj.ids.length; i++) {
             lookup[obj.ids[i]].delete(obj);
         }
     }
@@ -471,6 +474,8 @@ var GameFrame;
 
         // reset vars
         score = 0
+        t = 0;
+        tp = 0;
         collisions = {};
         keyEvents = {};
         loops = [];
