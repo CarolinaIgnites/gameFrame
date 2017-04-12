@@ -34,7 +34,7 @@
 
         new GameFrame({
                 "name": "Doge out",
-                "instructions": `Hit the left, right arrow keys to 
+                "instructions": `Hit the left, right arrow keys to
                     move the platform. Hit the up down arrow keys
                     to spin the ball.`,
                 "boundaries": true,
@@ -59,20 +59,11 @@
             })
 
             gf.registerKeys("#player", {
-                'right': function(player, lookup){
+                'right' : function(player, lookup){
                     player.state.pos.x += 30;
                 },
                 'left': function(player, lookup){
                     player.state.pos.x -= 30;
-                }
-            })
-
-            gf.registerKeys("#ball", {
-                'up': function(player, lookup){
-                    player.state.angular.vel += .01;
-                },
-                'down': function(player, lookup){
-                    player.state.angular.vel -= .01;
                 }
             })
 

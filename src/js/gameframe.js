@@ -19,13 +19,14 @@ var GameFrame;
     let loops = [];
     let lookup = {};
     let score = 0;
+    let score_2 = 0;
     let seed = 0;
 
     /// Global physics vars
     let world;
     let renderer;
-    
-    // For boundary   
+
+    // For boundary
     let viewportBounds = Physics.aabb(0, 0, window.innerWidth, window.innerHeight)
     let edgeBounce = Physics.behavior('edge-collision-detection', {
         aabb: viewportBounds
@@ -40,6 +41,7 @@ var GameFrame;
         40: "down",
         37: "left",
         39: "right",
+
     }
 
     // Objs for lookup
@@ -150,7 +152,7 @@ var GameFrame;
         // that should work well with every resolution
         let ratio = canvas.width/canvas.height;
         let width = height * ratio;
-        
+
         canvas.style.width = width+'px';
         canvas.style.height = height+'px';
 
@@ -163,8 +165,8 @@ var GameFrame;
 
     // Setup orientation for mobile
     let orient = function(){
-        // Paul warned us: "I am telling you this as a friend. 
-        // It exists. It is a thing, but it is a hack. 
+        // Paul warned us: "I am telling you this as a friend.
+        // It exists. It is a thing, but it is a hack.
         // Please don't use it."
         window.scrollTo(0,1);
         if(!GameFrame.prototype.debug)
@@ -184,9 +186,10 @@ var GameFrame;
             <div id="box">
                 <h1 id="modal-title"></h1>
                 <div id="comment"></div>
-                <button type="button" 
-                        id="button" 
-                        onclick="GameFrame.prototype.init()" 
+                <div id="comment2"></div>
+                <button type="button"
+                        id="button"
+                        onclick="GameFrame.prototype.init()"
                         class="btn btn-primary">Play game</button>
             </div>
             <div id="backdrop"></div>
@@ -196,6 +199,7 @@ var GameFrame;
         document.body.appendChild(modal);
         document.getElementById("modal-title").innerHTML = GameFrame.prototype.name;
         document.getElementById("comment").innerHTML = GameFrame.prototype.instructions;
+
     }
 
     // Create the object
@@ -396,6 +400,24 @@ var GameFrame;
         loops[loops.length] = f;
     }
 
+    GameFrame.prototype.checkScore = function(scoreCon){
+
+      if (score > scoreCon){
+        return true;
+      } else{
+        return false;
+      }
+    }
+
+    GameFrame.prototype.checkScore_2 = function(scoreCon){
+
+      if (score_2 > scoreCon){
+        return true;
+      } else{
+        return false;
+      }
+    }
+
     // Create a obj from a template
     GameFrame.prototype.template = function(id, x, y){
         let el = templates.querySelector(id).cloneNode(true);
@@ -423,8 +445,10 @@ var GameFrame;
         document.getElementById("viewport").remove();
         document.getElementById("modal-title").innerHTML = "Gameover";
         let comment = document.getElementById("comment");
-        comment.innerHTML = "Score:" + score;
-        comment.innerHTML += "<br/> Highscore:" + localStorage["highscore"];
+        let comment2 = document.getElementById('comment2');
+        comment.innerHTML = "Player Score:" + score_2;
+        comment2.innerHTML = "Enemy Score:" + score;
+      //comment.innerHTML += "<br/> Highscore:" + localStorage["highscore"];
         Physics.util.ticker.stop();
         world.destroy();
     }
@@ -435,7 +459,14 @@ var GameFrame;
         if(score > (localStorage["highscore"] | 0)){
             localStorage.setItem("highscore", score);
         }
-        scoreboard.innerHTML = "Score: " + score;
+        scoreboard.innerHTML = "Player Score: " + score;
+    }
+    GameFrame.prototype.score_2 = function(value){
+        score_2 += value || 0;
+        if(score_2 > (localStorage["highscore"] | 0)){
+            localStorage.setItem("highscore", score_2);
+        }
+        scoreboard.innerHTML = "Enemy Score: " + score_2;
     }
 
     // Restart the game and physics
@@ -449,6 +480,7 @@ var GameFrame;
 
         // reset vars
         score = 0
+        score_2 = 0
         collisions = {};
         keyEvents = {};
         loops = [];
@@ -457,6 +489,7 @@ var GameFrame;
         // Start the game
         physics();
         GameFrame.prototype.score(0);
+        GameFrame.prototype.score_2(0);
         GameFrame.prototype.game(this);
         resize();
     };
