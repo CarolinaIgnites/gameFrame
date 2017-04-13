@@ -41,8 +41,8 @@
                 "debug": true
             },function(gf){
 
-              gf.template("#ball", Math.floor(Math.random() * 1024, 1), Math.floor(Math.random() * 768, 1));
               let speed = 1;
+              gf.template("#ball", Math.floor(Math.random() * 1024, 1), Math.floor(Math.random() * 768, 1));
 
               gf.collision("#player", "#ball", function(data,lookup){
                       data["#ball"].state.vel.x = speed;
@@ -50,6 +50,7 @@
 
               gf.collision("#ball", "#enemy_wall", function(data,lookup){
                       playerScore += 1;
+                      gf.score(1);
               })
 
               gf.collision("#enemy", "#ball", function(data,lookup){
@@ -80,8 +81,8 @@
             gf.registerLoops(function(lookup){
                     let enemy = lookup["#enemy"];
                     let ball = lookup["#ball"];
-                    if(playerScore == 5){
-                          gf.score(playerScore);
+                    if(playerScore >= 5){
+                          playerScore = 0;
                           gf.gameOver();
                     }
                     let diff = (enemy.state.pos.y - ball.state.pos.y);
