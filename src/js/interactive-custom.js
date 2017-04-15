@@ -19,8 +19,7 @@ Physics.behavior('interactive-custom', function( parent ){
         }
         ,getElementOffset = function( el ){
             let curleft = 0
-                ,curtop = 0
-                ;
+                ,curtop = 0;
 
             if (el.offsetParent) {
                 do {
@@ -37,6 +36,10 @@ Physics.behavior('interactive-custom', function( parent ){
                 ,x = obj.pageX - offset.left
                 ,y = obj.pageY - offset.top
                 ;
+
+            // Resize
+            x *= 768.0/window.innerHeight;
+            y *= 768.0/window.innerHeight;
 
             return {
                 x: x
@@ -98,7 +101,6 @@ Physics.behavior('interactive-custom', function( parent ){
 
                         pos.body = body;
                         self._world.emit('interact:grab', pos);
-
                     } else if(e.type == "mousedown"){
 
                         body = self._world.findOne({ $at: new Physics.vector( pos.x, pos.y )});
@@ -127,7 +129,6 @@ Physics.behavior('interactive-custom', function( parent ){
                 }
 
                 self._world.emit('interact:move', pos);
-
             }, self.options.moveThrottle);
 
             let release = function release( e ){

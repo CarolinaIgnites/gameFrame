@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Game Frame Example</title>
+        <meta name="description" content="TODO"/>
+        <meta name="viewport" content="width=device-width" />
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="mobile-web-app-capable" content="yes">
+        <link rel="manifest" href="//www.carolinaignites.org/assets/js/manifest.json">
+        <link href="//www.carolinaignites.org/assets/css/gameframe.css" rel="stylesheet">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
+    <body>
+
+    <svg id="game">
+            <rect id="player" class="static" width="50" height="200" x=25 y=300 img="blue1.png" > </rect>
+            <rect id="player_wall" class="static" width = "10" height = "2000" x=5 y=300 img="white.png"> </rect>
+            <rect id="floor" class="static" width="2000" height="50" x=1000 y=750 img="rainbow.png"> </rect>
+            <rect id="enemy" class="static" width="50" height="200" x=1350 y=300 img="red1.png"  > </rect>
+            <rect id="enemy_wall" class="static" width = "10" height = "2000" x=1365 y=300 img= "white.png"> </rect>
+    </svg>
+
+    <svg id="templates" bounce=1 friction=0.8>
+            <circle id="ball" bounce="0.8" class="movable" vy=.8 vx=.6 cx=500 cy=200 r=50 img="cage.jpg"> </circle>
+            <rect class="static block" width="100" height="50" x=25 y=25 > </rect>
+    </svg>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PhysicsJS/0.7.0/physicsjs-full.min.js"></script>
+    <script src="//www.carolinaignites.org/assets/js/interactive-custom.js"></script>
+    <script src="//www.carolinaignites.org/assets/js/gameframe.js"></script>
+
+    <script type="text/javascript">
+        let playerScore = 0;
+        new GameFrame({
+                "name": "Pong",
+                "instructions": `Hit the up down arrow keys to move the paddle`,
+                "boundaries": true,
+                "impulse": true,
+                "gravity": false,
+                "debug": true
+            },function(gf){
+
+              let speed = 1;
+              gf.template("#ball", Math.floor(Math.random() * 1024, 1), Math.floor(Math.random() * 768, 1));
+
+              gf.collision("#player", "#ball", function(data,lookup){
+                      data["#ball"].state.vel.x = speed;
+              })
+
+              gf.collision("#ball", "#enemy_wall", function(data,lookup){
+                      playerScore += 1;
+                      gf.score(1);
+              })
+
+              gf.collision("#enemy", "#ball", function(data,lookup){
+                      data["#ball"].state.vel.x = speed;
+              })
+
+              gf.registerKeys("#player", {
+                      'down': function(player, lookup){
+                              player.state.pos.y += 50;
+                              player.state.vel.y = .2;
+                      },
+                      'up': function(player, lookup){
+                              player.state.pos.y -= 50;
+                              player.state.vel.y - .2;
+                      }
+             })
+
+             gf.registerKeys("#ball",{
+                    'left': function(player, lookup){
+                            player.state.angular.vel = -.02;
+                     },
+                     'right': function(player, lookup){
+                             player.state.angular.vel = .02;
+                      }
+
+            })
+
+            gf.registerLoops(function(lookup){
+                    let enemy = lookup["#enemy"];
+                    let ball = lookup["#ball"];
+                    if(playerScore >= 5){
+                          playerScore = 0;
+                          gf.gameOver();
+                    }
+                    let diff = (enemy.state.pos.y - ball.state.pos.y);
+                    enemy.state.pos.y -= Math.sign(diff) *  Math.min(1.5, Math.abs(diff));
+            });
+        });
+
+    </script>
+
+    </body>
+</html>

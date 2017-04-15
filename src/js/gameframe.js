@@ -263,6 +263,7 @@ var GameFrame;
     // start off all the physics
     let physics = function(){
         Physics({
+            sleepDisabled:true
         }, function(w){
 
             // Global scope
@@ -297,7 +298,7 @@ var GameFrame;
                                 datum = {};
                                 datum[col.bodyA.ids[j]] = col.bodyA;
                                 datum[col.bodyB.ids[k]] = col.bodyB;
-                                collisions[hash](datum);
+                                collisions[hash](datum, lookup);
                             }
                         }
                     }
