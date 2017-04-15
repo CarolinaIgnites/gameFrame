@@ -19,7 +19,7 @@
             <circle id="pig1" bounce="0.3" class="static" vy=.8 vx=.6 cx=550 cy=740 r=20 img="pig.png"> </circle>
             <circle id="pig2" bounce="0.3" class="static" vy=.8 vx=.6 cx=650 cy=740 r=20 img="pig.png"> </circle>
             <rect id="treasure" bounce="0" class="static" x=760 y=740 width = "60" height = "60" img="treasure.png"> </rect>
-            <rect id="startBrick" bounce="0" class="static" width="10" height="22" x=65 y=760 img="pig.png"></rect>
+            <rect id="startBrick" bounce="0" class="static" width="10" height="22" x=75 y=760 img="pig.png"></rect>
             <rect class="brick" bounce="0.2" width = "10" height = "50" x=500 y=740 img= "wood.jpg"> </rect>
             <rect class="brick" bounce="0.2" width = "10" height = "50" x=600 y=740 img= "wood.jpg"> </rect>
             <rect class="brick" bounce="0.2" width = "10" height = "50" x=700 y=740 img= "wood.jpg"> </rect>
@@ -37,30 +37,39 @@
     <script src="//www.carolinaignites.org/assets/js/gameframe.js"></script>
 
     <script type="text/javascript">
-        let scorableItems = 3;
+
         let startTimer = 0;
         new GameFrame({
                 "name": "Angry Birds",
-                "instructions": `Use the mouse to send the bird flying.`,
+                "instructions": `Click the mouse to send the bird flying.`,
                 "boundaries": true,
                 "impulse": true,
                 "gravity": true,
                 "debug": true
             },function(gf){
 
+
+              gf.collision("#bird", ".brick", function(data,lookup){
+                      gf.remove(data[".brick"]);
+                      let bird = lookup["#bird"];
+                      bird.state.vel.y = 0;
+                      bird.state.vel.x = 0;
+
+              })
+
               gf.collision("#bird", "#pig1", function(data,lookup){
                       gf.score(1);
-                      scorableItems -= 1;
+                    //  scorableItems -= 1;
                       gf.remove(data["#pig1"]);
               })
               gf.collision("#bird", "#pig2", function(data,lookup){
                       gf.score(1);
-                      scorableItems -= 1;
+                    //  scorableItems -= 1;
                       gf.remove(data["#pig2"]);
               })
               gf.collision("#bird", "#treasure", function(data,lookup){
                       gf.score(10);
-                      scorableItems -= 1;
+                    //  scorableItems -= 1;
                       gf.remove(data["#treasure"]);
               })
 
@@ -77,11 +86,14 @@
                      }
             })
 
-            gf.registerLoops(function(lookup){
-
-                    if(scorableItems == 0){
+            gf.registerLoops(function(lookup, dt){
+                    // let bird = lookup["#bird"];
+                    startTimer += dt;
+                    if(startTimer >= 10000){
+                          startTimer = 0;
                           gf.gameOver();
                     }
+
 
             });
         });
