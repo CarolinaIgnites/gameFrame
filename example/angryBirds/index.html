@@ -14,20 +14,14 @@
     <body>
 
     <svg id="game" bounce=1 friction=0.8>
-            <circle id="bird" bounce="0.1" class="movable" vy=.2 vx=.2 cx=9 cy=760 r=25 img="angry.png"> </circle>
-            <!-- <circle id="bird2" bounce="0" class="movable" vy=.2 vx=.2 cx=9 cy=660 r=25 img="angry.png"> </circle> -->
-            <circle id="pig1" bounce="0.3" class="static" vy=.8 vx=.6 cx=550 cy=740 r=20 img="pig.png"> </circle>
-            <circle id="pig2" bounce="0.3" class="static" vy=.8 vx=.6 cx=650 cy=740 r=20 img="pig.png"> </circle>
+            <circle id="bird" bounce="0.1" class="movable" cx=9 cy=150 r=25 img="angry.png"> </circle>
+            <circle id="pig1" bounce="0.3" class="pig static" vy=.8 vx=.6 cx=550 cy=740 r=20 img="pig.png"> </circle>
+            <circle id="pig2" bounce="0.3" class="pig static" vy=.8 vx=.6 cx=650 cy=740 r=20 img="pig.png"> </circle>
             <rect id="treasure" bounce="0" class="static" x=760 y=740 width = "60" height = "60" img="treasure.png"> </rect>
-            <rect id="startBrick" bounce="0" class="static" width="10" height="22" x=75 y=760 img="pig.png"></rect>
             <rect class="brick" bounce="0.2" width = "10" height = "50" x=500 y=740 img= "wood.jpg"> </rect>
             <rect class="brick" bounce="0.2" width = "10" height = "50" x=600 y=740 img= "wood.jpg"> </rect>
             <rect class="brick" bounce="0.2" width = "10" height = "50" x=700 y=740 img= "wood.jpg"> </rect>
             <rect class="brick" bounce="0.2" width = "200" height = "10" x=600 y=700 img= "wood.jpg"> </rect>
-            <!-- <rect class="brick" bounce="0.2" width = "10" height = "50" x=100 y=700 img= "wood.jpg"> </rect>
-            <rect class="brick" bounce="0.2" width = "10" height = "50" x=100 y=700 img= "wood.jpg"> </rect>
-            <rect class="brick" bounce="0.2" width = "10" height = "50" x=200 y=700 img= "wood.jpg"> </rect> -->
-
     </svg>
     <svg id="templates">
     </svg>
@@ -50,27 +44,32 @@
 
 
               gf.collision("#bird", ".brick", function(data,lookup){
-                      gf.remove(data[".brick"]);
-                      let bird = lookup["#bird"];
-                      bird.state.vel.y = 0;
-                      bird.state.vel.x = 0;
-
+                      let bird = data["#bird"];
+                      setInterval(function(){
+                        gf.remove(data[".brick"]);
+                      }, 750);
               })
 
-              gf.collision("#bird", "#pig1", function(data,lookup){
+              gf.collision(".brick", ".pig", function(data,lookup){
                       gf.score(1);
-                    //  scorableItems -= 1;
-                      gf.remove(data["#pig1"]);
+                      setInterval(function(){
+                        gf.remove(data[".pig"]);
+                      }, 300);
               })
-              gf.collision("#bird", "#pig2", function(data,lookup){
+
+
+              gf.collision("#bird", ".pig", function(data,lookup){
                       gf.score(1);
-                    //  scorableItems -= 1;
-                      gf.remove(data["#pig2"]);
+                      setInterval(function(){
+                        gf.remove(data[".pig"]);
+                      }, 300);
               })
+
               gf.collision("#bird", "#treasure", function(data,lookup){
                       gf.score(10);
-                    //  scorableItems -= 1;
-                      gf.remove(data["#treasure"]);
+                      setInterval(function(){
+                        gf.remove(data["#treasure"]);
+                      }, 300);
               })
 
              gf.registerKeys("#bird", {
@@ -93,8 +92,6 @@
                           startTimer = 0;
                           gf.gameOver();
                     }
-
-
             });
         });
 
