@@ -14,14 +14,14 @@
     <body>
 
     <svg id="game" bounce=1 friction=0.8>
-            <circle id="bird" bounce="0.1" class="movable" cx=9 cy=150 r=25 img="angry.png"> </circle>
-            <circle id="pig1" bounce="0.3" class="pig static" vy=.8 vx=.6 cx=550 cy=740 r=20 img="pig.png"> </circle>
-            <circle id="pig2" bounce="0.3" class="pig static" vy=.8 vx=.6 cx=650 cy=740 r=20 img="pig.png"> </circle>
-            <rect id="treasure" bounce="0" class="static" x=760 y=740 width = "60" height = "60" img="treasure.png"> </rect>
-            <rect class="brick" bounce="0.2" width = "10" height = "50" x=500 y=740 img= "wood.jpg"> </rect>
-            <rect class="brick" bounce="0.2" width = "10" height = "50" x=600 y=740 img= "wood.jpg"> </rect>
-            <rect class="brick" bounce="0.2" width = "10" height = "50" x=700 y=740 img= "wood.jpg"> </rect>
-            <rect class="brick" bounce="0.2" width = "200" height = "10" x=600 y=700 img= "wood.jpg"> </rect>
+            <circle id="teddy" bounce="0.1" class="movable" cx=9 cy=150 r=25 img="pic/teddy.png"> </circle>
+            <circle id="sq1" bounce="0.3" class="sq static" vy=.8 vx=.6 cx=550 cy=740 r=20 img="pic/squirrel.png"> </circle>
+            <circle id="sq2" bounce="0.3" class="sq static" vy=.8 vx=.6 cx=650 cy=740 r=20 img="pic/squirrel.png"> </circle>
+            <rect id="treasure" bounce="0" class="static" x=760 y=740 width = "60" height = "60" img="pic/treasure.png"> </rect>
+            <rect class="brick" bounce="0.2" width = "10" height = "50" x=500 y=740 img= "pic/wood.jpg"> </rect>
+            <rect class="brick" bounce="0.2" width = "10" height = "50" x=600 y=740 img= "pic/wood.jpg"> </rect>
+            <rect class="brick" bounce="0.2" width = "10" height = "50" x=700 y=740 img= "pic/wood.jpg"> </rect>
+            <rect class="brick" bounce="0.2" width = "200" height = "10" x=600 y=700 img= "pic/wood.jpg"> </rect>
     </svg>
     <svg id="templates">
     </svg>
@@ -34,8 +34,8 @@
 
         let startTimer = 0;
         new GameFrame({
-                "name": "Angry Birds",
-                "instructions": `Click the mouse to send the bird flying.`,
+                "name": "Bear Attack",
+                "instructions": `Click the mouse to send the teddy flying.`,
                 "boundaries": true,
                 "impulse": true,
                 "gravity": true,
@@ -43,50 +43,52 @@
             },function(gf){
 
 
-              gf.collision("#bird", ".brick", function(data,lookup){
-                      let bird = data["#bird"];
+              gf.collision("#teddy", ".sq", function(data,lookup){
+                        gf.score(1);
+                        setInterval(function(){
+                          gf.remove(data[".sq"]);
+                        }, 150);
+              })
+
+
+
+              gf.collision("#teddy", ".brick", function(data,lookup){
+                      gf.score(1);
                       setInterval(function(){
                         gf.remove(data[".brick"]);
-                      }, 750);
+                      }, 50);
               })
 
-              gf.collision(".brick", ".pig", function(data,lookup){
+
+              gf.collision(".brick", ".sq", function(data,lookup){
                       gf.score(1);
                       setInterval(function(){
-                        gf.remove(data[".pig"]);
+                        gf.remove(data[".sq"]);
                       }, 300);
               })
 
-
-              gf.collision("#bird", ".pig", function(data,lookup){
-                      gf.score(1);
-                      setInterval(function(){
-                        gf.remove(data[".pig"]);
-                      }, 300);
-              })
-
-              gf.collision("#bird", "#treasure", function(data,lookup){
+              gf.collision("#teddy", "#treasure", function(data,lookup){
                       gf.score(10);
                       setInterval(function(){
                         gf.remove(data["#treasure"]);
                       }, 300);
               })
 
-             gf.registerKeys("#bird", {
+             gf.registerKeys("#teddy", {
                      'click': function(player, lookup){
                              player.state.vel.y -= .4;
-                             player.state.vel.x += .4;
+                             player.state.vel.x += .24; //.25 sweet spot
                              player.state.angular.vel = .02;
                      },
                      'right': function(player, lookup){
                              player.state.vel.y -= .4;
-                             player.state.vel.x += .4;
+                             player.state.vel.x += .24;
                              player.state.angular.vel = .02;
                      }
             })
 
             gf.registerLoops(function(lookup, dt){
-                    // let bird = lookup["#bird"];
+
                     startTimer += dt;
                     if(startTimer >= 10000){
                           startTimer = 0;
