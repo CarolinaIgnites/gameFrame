@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Game Frame Example</title>
+        <meta name="description" content="TODO"/>
+        <meta name="viewport" content="width=device-width" />
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="mobile-web-app-capable" content="yes">
+        <link rel="manifest" href="//www.carolinaignites.org/assets/js/manifest.json">
+        <link href="//www.carolinaignites.org/assets/css/gameframe.css" rel="stylesheet">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    </head>
+    <body>
+
+    <svg id="game" bounce=1 friction=0.8>
+              <rect id="player" class="static" width="200" height="50" x=500 y=300  > </rect>
+
+    </svg>
+
+    <svg id="templates">
+    </svg>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PhysicsJS/0.7.0/physicsjs-full.min.js"></script>
+    <script src="//www.carolinaignites.org/assets/js/interactive-custom.js"></script>
+    <script src="//www.carolinaignites.org/assets/js/gameframe.js"></script>
+
+    <script type="text/javascript">
+
+        let startTimer = 0;
+        new GameFrame({
+                "name": "Moving a Player",
+                "instructions": `How to move a player.`,
+                "boundaries": true,
+                "impulse": true,
+                "gravity": true
+            },function(gf){
+
+        gf.registerKeys("#player",{
+                'left': function(player, lookup){
+                    player.state.pos.x -= 50;
+                    player.state.vel.x - .2;
+                },
+                'right': function(player, lookup){
+                  player.state.pos.x += 50;
+                  player.state.vel.x = .2;
+                }
+        })
+
+
+            gf.registerLoops(function(lookup, dt){
+
+                    // startTimer += dt;
+                    // if(startTimer >= 10000){
+                    //       startTimer = 0;
+                    //       gf.gameOver();
+                    // }
+            });
+        });
+
+    </script>
+
+    </body>
+</html>
