@@ -4,7 +4,7 @@ var GameFrame;
 (()=>{
 
     // Building dom
-    let game = document.getElementById('game');
+    let game = document.getElementById('game') || {attributes:{}};
     let templates = document.getElementById('templates');
     let scoreboard = document.createElement("div");
     let modal = document.createElement("div");
