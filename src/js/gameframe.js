@@ -64,6 +64,7 @@ var GameFrame;
                 vx: (el.attributes["vx"] || 0).value,
                 restitution: toFloat((el.attributes["bounce"] || 0).value, 0.5),
                 cof: toFloat((el.attributes["friction"] || 0).value, 0.5),
+                impulse: !el.classList.contains('no-impulse'),
             });
         },
         "rect" : function(el){
@@ -78,6 +79,7 @@ var GameFrame;
                 vx: (el.attributes["vx"] || 0).value,
                 restitution: toFloat((el.attributes["bounce"] || 0).value, 0.5),
                 cof: toFloat((el.attributes["friction"] || 0).value, 0.5),
+                impulse: !el.classList.contains('no-impulse'),
             });
         },
         "g" : function(el){
@@ -133,7 +135,7 @@ var GameFrame;
                 // Set the object src
                 obj.view.src = clipboard.toDataURL("image/png");
             }
-        }
+        },
     }
 
     // Helper functions
@@ -239,6 +241,7 @@ var GameFrame;
     // add obj to lookups and hashmaps
     let buildObj = function(el){
         let obj = createObj(el);
+
         if(obj){
             let ids = [];
             if(!el.id){
@@ -310,7 +313,7 @@ var GameFrame;
                 let key = "click";
                 if(key in keyEvents){
                     for (let id in keyEvents[key]) {
-                        keyEvents[key][id](lookup[id], lookup);
+                        keyEvents[key][id](lookup[id], lookup, data);
                     }
                 }
             });
@@ -323,7 +326,7 @@ var GameFrame;
             ]);
 
             if(GameFrame.prototype.boundaries) world.add(edgeBounce);
-            if(GameFrame.prototype.impulse) world.add(Physics.behavior('body-impulse-response'));
+            if(GameFrame.prototype.impulse) world.add(Physics.behavior('body-impulse-response').applyTo(world.find({impulse: true})));
             if(GameFrame.prototype.gravity) world.add(Physics.behavior('constant-acceleration'));
 
             // Set up step
