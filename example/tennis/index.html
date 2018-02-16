@@ -14,15 +14,15 @@
     <body>
 
     <svg id="game">
-            <rect id="player" class="static" width="50" height="200" x=25 y=300 img="blue1.png" > </rect>
-            <rect id="player_wall" class="static" width = "10" height = "2000" x=5 y=300 img="white.png"> </rect>
-            <rect id="floor" class="static" width="2000" height="50" x=1000 y=750 img="rainbow.png"> </rect>
-            <rect id="enemy" class="static" width="50" height="200" x=1350 y=300 img="red1.png"  > </rect>
-            <rect id="enemy_wall" class="static" width = "10" height = "2000" x=1365 y=300 img= "white.png"> </rect>
+            <rect id="player" class="static" width="50" height="200" x=25 y=300 img="pic/blue1.png" > </rect>
+            <rect id="player_wall" class="static" width = "10" height = "2000" x=5 y=300 img="pic/white.png"> </rect>
+            <rect id="floor" class="static" width="2000" height="50" x=1000 y=750 img="pic/rainbow.png"> </rect>
+            <rect id="enemy" class="static" width="50" height="200" x=1350 y=300 img="pic/red1.png"  > </rect>
+            <rect id="enemy_wall" class="static" width = "10" height = "2000" x=1365 y=300 img= "pic/white.png"> </rect>
     </svg>
 
     <svg id="templates" bounce=1 friction=0.8>
-            <circle id="ball" bounce="0.8" class="movable" vy=.8 vx=.6 cx=500 cy=200 r=50 img="cage.jpg"> </circle>
+            <circle id="ball" bounce="0.8" class="movable" vy=.8 vx=.6 cx=500 cy=300 r=50 img="pic/cage.jpg"> </circle>
             <rect class="static block" width="100" height="50" x=25 y=25 > </rect>
     </svg>
 
@@ -33,8 +33,8 @@
     <script type="text/javascript">
         let playerScore = 0;
         new GameFrame({
-                "name": "Pong",
-                "instructions": `Hit the up down arrow keys to move the paddle`,
+                "name": "Tennis",
+                "instructions": `Anybody up for a game of tennis? Hit the up down arrow keys to move the paddle`,
                 "boundaries": true,
                 "impulse": true,
                 "gravity": false,
