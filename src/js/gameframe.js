@@ -51,6 +51,22 @@ var GameFrame;
     });
 
     // Objs for lookup
+    let Cache = function(){
+        this.cache = {};
+    }
+    Cache.prototype.key = (obj, src) =>{
+        return {
+            "rect" : [obj.width, obj.height, src].toString(),
+            "circle": [obj.geometry.radius, src].toString(),
+        }[obj.gf_type];
+    }
+    Cache.prototype.attempt = function(obj, src) {
+        return this.cache[this.key(obj,src)];
+    }
+    Cache.prototype.set = function(key, value) {
+        this.cache[key] = value;
+    }
+    let cache = new Cache();
     // Turn svg to object
     let taxonomy = {
         "circle" : function(el){
@@ -100,7 +116,7 @@ var GameFrame;
 
     // Format/clip images based on type
     let clip = {
-        "rect": (obj, img)=>{
+        "rect": (obj, img, src)=>{
             return function(){
 
                 // Adjust to size
@@ -113,9 +129,10 @@ var GameFrame;
 
                 // Set the object src
                 obj.view.src = clipboard.toDataURL("image/png");
+                cache.set(cache.key(obj, src), obj.view.src);
             }
         },
-        "circle": (obj, img)=>{
+        "circle": (obj, img, src)=>{
             return function(){
 
                 let radius = obj.geometry.radius;
@@ -134,6 +151,7 @@ var GameFrame;
 
                 // Set the object src
                 obj.view.src = clipboard.toDataURL("image/png");
+                cache.set(cache.key(obj, src), obj.view.src);
             }
         },
     }
@@ -440,9 +458,14 @@ var GameFrame;
 
         let img = new Image();
         obj.view = new Image();
-        img.setAttribute('crossOrigin', 'anonymous');
-        img.onload = clip[type](obj, img);
-        img.src = src;
+        let image;
+        if (image = cache.attempt(obj, src)) {
+            obj.view.src = image;
+        } else {
+            img.setAttribute('crossOrigin', 'anonymous');
+            img.onload = clip[type](obj, img, src);
+            img.src = src;
+        }
     }
 
 
