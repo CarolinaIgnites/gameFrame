@@ -469,7 +469,7 @@ var GameFrame;
         } else {
             img.setAttribute('crossOrigin', 'anonymous');
             img.onload = clip[type](obj, img, src);
-            img.src = GameFrame.prototype.cache_proxy(src);
+            img.src = GameFrame.prototype.cache_proxy(src, cache.key(obj, src));
         }
     }
 
