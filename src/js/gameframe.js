@@ -42,7 +42,7 @@ var GameFrame;
     // helpers
     let toFloat = (val,fallback)=>{return isNaN(val)?fallback:val;}
 
-    // For boundary   
+    // For boundary
     let viewportBounds = Physics.aabb(0, 0, window.innerWidth, window.innerHeight)
     let edgeBounce = Physics.behavior('edge-collision-detection', {
         aabb: viewportBounds,
@@ -65,6 +65,7 @@ var GameFrame;
     }
     Cache.prototype.set = function(key, value) {
         this.cache[key] = value;
+        GameFrame.prototype.external_cache(key, value);
     }
     let cache = new Cache();
     // Turn svg to object
@@ -182,7 +183,7 @@ var GameFrame;
         // that should work well with every resolution
         let ratio = canvas.width/canvas.height;
         let width = height * ratio;
-        
+
         canvas.style.width = width+'px';
         canvas.style.height = height+'px';
 
@@ -195,8 +196,8 @@ var GameFrame;
 
     // Setup orientation for mobile
     let orient = function(){
-        // Paul warned us: "I am telling you this as a friend. 
-        // It exists. It is a thing, but it is a hack. 
+        // Paul warned us: "I am telling you this as a friend.
+        // It exists. It is a thing, but it is a hack.
         // Please don't use it."
         if(!GameFrame.prototype.debug){
             window.scrollTo(0,1);
@@ -225,9 +226,9 @@ var GameFrame;
             <div id="box">
                 <h1 id="modal-title"></h1>
                 <div id="comment"></div>
-                <button type="button" 
-                        id="button" 
-                        onclick="GameFrame.prototype.init()" 
+                <button type="button"
+                        id="button"
+                        onclick="GameFrame.prototype.init()"
                         class="btn btn-primary">Play game</button>
             </div>
             <div id="backdrop"></div>
@@ -405,6 +406,10 @@ var GameFrame;
         GameFrame.prototype.gravity = "gravity" in settings ? settings["gravity"] : false;
         GameFrame.prototype.debug = "debug" in settings ? settings["debug"] : false;
         GameFrame.prototype.modal = "modal" in settings ? settings["modal"] : true;
+
+        // For external caching
+        GameFrame.prototype.external_cache = "external_cache" in settings ? settings["external_cache"] : function(){};
+        GameFrame.prototype.cache_proxy = "cache_proxy" in settings ? settings["cache_proxy"] : function(src){return src;};
         GameFrame.prototype.game = f;
 
         // Create modal and other pieces
@@ -464,7 +469,7 @@ var GameFrame;
         } else {
             img.setAttribute('crossOrigin', 'anonymous');
             img.onload = clip[type](obj, img, src);
-            img.src = src;
+            img.src = GameFrame.prototype.cache_proxy(src);
         }
     }
 

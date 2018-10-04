@@ -183,6 +183,8 @@ Javascript
         "boundaries": true, // default true, this will cause collisions with edge of screen
         "impulse": true, // default true, this will allow for reactive collisions
         "gravity": false, // default false, this will cause a downwards pulling force on all objects
+        "external_cache": (key, value)=> {}, // default noop, this is a callback for setting an external cache
+        "cache_proxy": (src)=> src, // default identity, this is a callback setting the url for an external cache lookup
     }
 ```
 
