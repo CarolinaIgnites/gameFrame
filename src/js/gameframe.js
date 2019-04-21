@@ -4,14 +4,8 @@ var GameFrame;
 (()=>{
 
     // Building dom
-    let game = document.getElementById('game') || {attributes:{}};
-    let templates = document.getElementById('templates');
-    let scoreboard = document.createElement("div");
-    let modal = document.createElement("div");
-    let style = document.createElement("style");
-    let clipboard = document.createElement("canvas");
-    let context = clipboard.getContext("2d");
-    let children = game.children;
+    let game, templates, scoreboard, modal, style,
+        clipboard, context, children;
 
     // Scoped states
     let started = false;
@@ -46,8 +40,8 @@ var GameFrame;
     let viewportBounds = Physics.aabb(0, 0, window.innerWidth, window.innerHeight)
     let edgeBounce = Physics.behavior('edge-collision-detection', {
         aabb: viewportBounds,
-        restitution: toFloat((game.attributes["bounce"] || 0).value, 0.5),
-        cof: toFloat((game.attributes["friction"] || 0).value, 0.5),
+        restitution: 0,
+        cof: 0,
     });
 
     // Objs for lookup
@@ -186,6 +180,7 @@ var GameFrame;
 
         canvas.style.width = width+'px';
         canvas.style.height = height+'px';
+        canvas.style.left = ((window.innerWidth - width)/2)  + "px"
 
         // if boundaries and running, update the boundaries
         if(started && GameFrame.prototype.boundaries){
@@ -201,12 +196,27 @@ var GameFrame;
         // Please don't use it."
         if(!GameFrame.prototype.debug){
             window.scrollTo(0,1);
-            document.body.webkitRequestFullScreen();
+            if (document.body.webkitRequestFullScreen)
+                document.body.webkitRequestFullScreen();
         }
     }
 
+    // Get existing context from the page.
+    let rebindDom = function() {
+        game = document.getElementById('game') || {attributes:{}};
+        templates = document.getElementById('templates');
+        scoreboard = document.createElement("div");
+        modal = document.createElement("div");
+        style = document.createElement("style");
+        clipboard = document.createElement("canvas");
+        context = clipboard.getContext("2d");
+        children = game.children;
+    };
+
     // Render dom to page
     let buildDom = function(){
+        rebindDom();
+
         // Create scoreboard
         scoreboard.id = "scoreboard";
         document.body.appendChild(scoreboard);
@@ -215,6 +225,7 @@ var GameFrame;
         // Set background
         let src = (game.attributes["img"] || 0).value;
         if(src){
+            src = GameFrame.prototype.cache_proxy(src, "background");
             style.innerHTML = "#viewport{background-image:url('"+src+"');background-size: cover;}";
             document.body.appendChild(style);
         }
@@ -291,6 +302,13 @@ var GameFrame;
             // Global scope
             world = w;
 
+            // set edges
+            edgeBounce = Physics.behavior('edge-collision-detection', {
+                aabb: viewportBounds,
+                restitution: toFloat((game.attributes["bounce"] || 0).value, 0.5),
+                cof: toFloat((game.attributes["friction"] || 0).value, 0.5),
+            });
+
             // Build from svg
             for (let i = 0; i < children.length; i++) {
                 buildObj(children[i]);
@@ -328,8 +346,7 @@ var GameFrame;
             });
 
             // click action
-            world.on('interact:click', function(data){
-                let key = "click";
+            world.on('interact:click', function(data){ let key = "click";
                 if(key in keyEvents){
                     for (let id in keyEvents[key]) {
                         keyEvents[key][id](lookup[id], lookup, data);
@@ -374,15 +391,18 @@ var GameFrame;
     };
 
     // Event listeners
-    // capture keys
-    document.addEventListener('keydown', function(e){
-        let key = getKey(e.keyCode);
+    let processKey = function(key) {
         keys[key] = true;
         if(key in keyEvents){
             for (let id in keyEvents[key]) {
                 keyEvents[key][id](lookup[id], lookup);
             }
         }
+    }
+    // capture keys
+    document.addEventListener('keydown', function(e){
+        let key = getKey(e.keyCode);
+        processKey(key);
     });
     document.addEventListener('keyup', function(e){
         keys[getKey(e.keyCode)] = false;
@@ -434,12 +454,32 @@ var GameFrame;
     }
 
     // Bind events
+    let joystick;
     GameFrame.prototype.registerKeys = function(id, keys){
         for (let key in keys) {
             if(!(key in keyEvents)){
                 keyEvents[key] = {};
             }
             keyEvents[key][id] = keys[key];
+
+            // capture joy stick
+            if (!joystick
+                    && Object.values(special).indexOf(key) + 1
+                    && typeof nipplejs !== 'undefined'
+                    && window.matchMedia('(display-mode: standalone)').matches) {
+                joystick = nipplejs.create({
+                    zone: document.body,
+                    color: 'blue'
+                });
+                joystick.on('dir:up plain:up dir:left plain:left dir:down ' +
+                            'plain:down dir:right plain:right', function(evt, data){
+                    let k = data.direction.angle;
+                    Object.values(special).forEach((check)=>{
+                        keys[check] = check == k;
+                    })
+                    processKey(k);
+                });
+            }
         }
     }
 
@@ -482,6 +522,10 @@ var GameFrame;
         let comment = document.getElementById("comment");
         comment.innerHTML = "Score:" + score;
         comment.innerHTML += "<br/> Highscore:" + localStorage["highscore"];
+        if (joystick) {
+            joystick.destroy();
+            joystick = undefined;
+        }
         Physics.util.ticker.stop();
         world.destroy();
     }
