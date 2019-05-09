@@ -280,6 +280,7 @@ var GameFrame;
             obj.ids = ids;
             world.add(obj);
         }
+        return obj;
     }
 
     // start off all the physics
@@ -453,7 +454,7 @@ var GameFrame;
         let el = templates.querySelector(id).cloneNode(true);
         el.setAttribute('x', (x || el.attributes["x"]) | 0);
         el.setAttribute('y', (y || el.attributes["y"]) | 0);
-        buildObj(el);
+        return buildObj(el);
     }
 
     // Change the image of an object
