@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Khalid Example</title>
+    <meta name="description" content="TODO" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="https://www.carolinaignites.org/assets/js/manifest.json">
+    <link href="https://www.carolinaignites.org/assets/css/gameframe.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+
+<body>
+    <svg id="game">
+        <rect id="dino" x="950" y="700" width="50" height="50" img="dino.png"> </rect>
+        <rect class="bound static" width="2000" height="50" x=1000 y=768>
+        </rect>
+    </svg>
+    <svg id="templates">
+        <g class="block static">
+            <rect width="30" height="75" x=0 y=500> </rect>
+        </g>
+    </svg>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PhysicsJS/0.7.0/physicsjs-full.min.js"></script>
+    <script src="https://www.carolinaignites.org/assets/js/interactive-custom.js"></script>
+    <script src="https://www.carolinaignites.org/assets/js/gameframe.js"></script>
+    <script type="text/javascript">
+    let startTimer = 0;
+    new GameFrame({
+        "name": "Dino Run",
+        "instructions": `Remake of the chrome dino game. Click up to jump.`,
+        "boundaries": true,
+        "impulse": true,
+        "gravity": true
+    }, function(gf) {
+       let score = 0;
+       let canJump = true;
+       let 
+
+        gf.collision(".bound", "#dino", function(data, lookup){
+            canJump = true;
+        })
+
+        gf.collision(".block", "#dino", function(data, lookup)
+        {
+            gf.gameOver();
+        })
+
+        gf.template(".block", 0, 750);
+        gf.template(".block", 300, 750)
+        gf.template(".block", 700, 750);
+        gf.registerKeys("#dino", {
+            'up': function(player, lookup) {
+                if (player.state.pos.y > 550 && canJump) {
+                    player.state.vel.y -= .25;
+                    canJump = false;
+                    //player.state.vel.x -= .005;
+                   // document.getElementById("score").innerHTML = score;
+                } else
+                    console.log("lowering");
+            }      
+        });
+
+        gf.registerLoops(function(lookup) {
+            for (let obj of lookup[".block"]) {
+                obj.state.pos.x += 2;
+                if (obj.state.pos.x > 1200) {
+                    gf.score(10);
+                    obj.state.pos.x = 0 + Math.random() * 200;
+                }
+            }
+            dino = lookup["#dino"]
+            dino.state.vel.x = 0;
+        });
+    });
+    </script>
+</body>
+
+</html>

@@ -466,8 +466,7 @@ var GameFrame;
             // capture joy stick
             if (!joystick
                     && Object.values(special).indexOf(key) + 1
-                    && typeof nipplejs !== 'undefined'
-                    && window.matchMedia('(display-mode: standalone)').matches) {
+                    && typeof nipplejs !== 'undefined') {
                 joystick = nipplejs.create({
                     zone: document.body,
                     color: 'blue'
