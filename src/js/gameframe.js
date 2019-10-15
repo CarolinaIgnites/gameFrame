@@ -416,9 +416,6 @@ var GameFrame;
     // Construct sets up state
     GameFrame = function(settings, f){
 
-        // Set score to 0 if not exists
-        localStorage.setItem("highscore", (localStorage["highscore"] | 0));
-
         // Set settings
         GameFrame.prototype.name = settings["name"] || "GameFrame Game";
         GameFrame.prototype.instructions = settings["instructions"] || "instructions";
@@ -431,6 +428,14 @@ var GameFrame;
         // For external caching
         GameFrame.prototype.external_cache = "external_cache" in settings ? settings["external_cache"] : function(){};
         GameFrame.prototype.cache_proxy = "cache_proxy" in settings ? settings["cache_proxy"] : function(src){return src;};
+
+        // For external score keeping
+        GameFrame.prototype.set_score = "set_score" in settings ? settings["set_score"] : function(score){localStorage.setItem("highscore", score)};
+        GameFrame.prototype.get_score = "get_score" in settings ? settings["get_score"] : function(src){return (localStorage["highscore"] | 0);};
+
+        // Set score to 0 if not exists
+        GameFrame.prototype.set_score(GameFrame.prototype.get_score());
+
         GameFrame.prototype.game = f;
 
         // Create modal and other pieces
@@ -466,8 +471,7 @@ var GameFrame;
             // capture joy stick
             if (!joystick
                     && Object.values(special).indexOf(key) + 1
-                    && typeof nipplejs !== 'undefined'
-                    && window.matchMedia('(display-mode: standalone)').matches) {
+                    && typeof nipplejs !== 'undefined') {
                 joystick = nipplejs.create({
                     zone: document.body,
                     color: 'blue'
@@ -522,7 +526,7 @@ var GameFrame;
         document.getElementById("modal-title").innerHTML = "Gameover";
         let comment = document.getElementById("comment");
         comment.innerHTML = "Score:" + score;
-        comment.innerHTML += "<br/> Highscore:" + localStorage["highscore"];
+        comment.innerHTML += "<br/> Highscore:" + GameFrame.prototype.get_score();
         if (joystick) {
             joystick.destroy();
             joystick = undefined;
@@ -534,8 +538,8 @@ var GameFrame;
     // Increment the score
     GameFrame.prototype.score = function(value){
         score += value || 0;
-        if(score > (localStorage["highscore"] | 0)){
-            localStorage.setItem("highscore", score);
+        if(score > GameFrame.prototype.get_score()){
+            GameFrame.prototype.set_score(score);
         }
         scoreboard.innerHTML = "Score: " + score;
     }
