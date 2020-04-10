@@ -1,12 +1,12 @@
-                  ▄▄▄▄                                          
-                 ██▀▀▀                                          
-      ▄███▄██  ███████    ██▄████   ▄█████▄  ████▄██▄   ▄████▄  
-     ██▀  ▀██    ██       ██▀       ▀ ▄▄▄██  ██ ██ ██  ██▄▄▄▄██ 
-     ██    ██    ██       ██       ▄██▀▀▀██  ██ ██ ██  ██▀▀▀▀▀▀ 
-     ▀██▄▄███    ██       ██       ██▄▄▄███  ██ ██ ██  ▀██▄▄▄▄█ 
-      ▄▀▀▀ ██    ▀▀       ▀▀        ▀▀▀▀ ▀▀  ▀▀ ▀▀ ▀▀    ▀▀▀▀▀  
-      ▀████▀▀                                                   
-                                  
+                  ▄▄▄▄
+                 ██▀▀▀
+      ▄███▄██  ███████    ██▄████   ▄█████▄  ████▄██▄   ▄████▄
+     ██▀  ▀██    ██       ██▀       ▀ ▄▄▄██  ██ ██ ██  ██▄▄▄▄██
+     ██    ██    ██       ██       ▄██▀▀▀██  ██ ██ ██  ██▀▀▀▀▀▀
+     ▀██▄▄███    ██       ██       ██▄▄▄███  ██ ██ ██  ▀██▄▄▄▄█
+      ▄▀▀▀ ██    ▀▀       ▀▀        ▀▀▀▀ ▀▀  ▀▀ ▀▀ ▀▀    ▀▀▀▀▀
+      ▀████▀▀
+
 ---
 
 About
@@ -116,7 +116,7 @@ Creates a rectangle object
 
     friction - float - the coefficent of friction, from 0-1.0 (1 is frictional)
 
-    width - number - width of the object 
+    width - number - width of the object
 
     height - number - height of the object
 
@@ -139,7 +139,7 @@ Creates a circle object
 
     friction - float - the coefficent of friction, from 0-1.0. 1 is frictional, default 0.5 (optional)
 
-    r - number - radius of the circle 
+    r - number - radius of the circle
 
     x - number - x center point of circle
 
@@ -164,7 +164,7 @@ Creates a group of objects, where everything nested inside the group is consider
 When Collision and gravity is on, this object will stay in place even when bumped
 
 `.movable`
-This should be draggable and movable by clicking and dragging from the user 
+This should be draggable and movable by clicking and dragging from the user
 
 
 Javascript
@@ -173,7 +173,7 @@ Javascript
 #### Main initializer to start game
 `GameFrame = function(settings, f)`
 
-    settings - hashmap - Contains meta information for the game to start 
+    settings - hashmap - Contains meta information for the game to start
 ```javascript
     {
         "name": "This is the name for your game",
@@ -200,7 +200,7 @@ Javascript
     B - string- CSS identifier for object
 
     f(data, lookup) - function - Handler for collision callback
-        data - Hashmap of objects collided eg. 
+        data - Hashmap of objects collided eg.
 ```javascript
             data = {
                 "#obj": [Object],
@@ -225,7 +225,7 @@ Javascript
 
     id - string - Element selector for object to respond to keys
 
-    keys - hashmap - hashmap of keys and the corresponding callbacks eg. 
+    keys - hashmap - hashmap of keys and the corresponding callbacks eg.
 ```javascript
         {
             // Standard letter keys
