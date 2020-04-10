@@ -1,0 +1,18 @@
+{
+  "name": "gameframe",
+  "version": "1.0.3",
+  "description": "Wrapper for PhysicsJS, which make basic game development as simple as possible.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "CarolinaIgnites",
+  "license": "ISC",
+  "dependencies": {
+    "physicsjs": "^0.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CarolinaIgnites/gameFrame"
+  }
+}
