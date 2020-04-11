@@ -1,4 +1,3 @@
-require('physicsjs');
 
 var GameFrame;
 
