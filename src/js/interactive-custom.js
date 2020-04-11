@@ -1,3 +1,4 @@
+require('physicsjs');
 Physics.behavior('interactive-custom', function( parent ){
 
     let mobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase());

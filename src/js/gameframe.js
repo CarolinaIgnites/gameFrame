@@ -1,3 +1,5 @@
+require('physicsjs');
+
 var GameFrame;
 
 // Keep everything in scope
