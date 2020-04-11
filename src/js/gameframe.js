@@ -1,3 +1,4 @@
+var Physics = require('physicsjs/dist/physicsjs-full.min.js');
 
 var GameFrame;
 
