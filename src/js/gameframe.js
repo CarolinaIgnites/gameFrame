@@ -435,6 +435,9 @@ var GameFrame;
         GameFrame.prototype.set_score = "set_score" in settings ? settings["set_score"] : function(score){localStorage.setItem("highscore", score)};
         GameFrame.prototype.get_score = "get_score" in settings ? settings["get_score"] : function(src){return (localStorage["highscore"] | 0);};
 
+        // For external gameover hook.
+        GameFrame.prototype.gameOver_hook = "gameover_hook" in settings ? settings["gameover_hook"] : function(){};
+
         // Set score to 0 if not exists
         GameFrame.prototype.set_score(GameFrame.prototype.get_score());
 
@@ -527,14 +530,18 @@ var GameFrame;
         document.getElementById("viewport").remove();
         document.getElementById("modal-title").innerHTML = "Gameover";
         let comment = document.getElementById("comment");
+        // In case there's latency between get_score and set_score, we take the
+        // max. Noticed bug in app implementation.
+        let highscore = Math.max(score, GameFrame.prototype.get_score());
         comment.innerHTML = "Score:" + score;
-        comment.innerHTML += "<br/> Highscore:" + GameFrame.prototype.get_score();
+        comment.innerHTML += "<br/> Highscore:" + highscore;
         if (joystick) {
             joystick.destroy();
             joystick = undefined;
         }
         Physics.util.ticker.stop();
         world.destroy();
+        GameFrame.prototype.gameOver_hook();
     }
 
     // Increment the score
