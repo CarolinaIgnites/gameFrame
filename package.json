@@ -1,6 +1,6 @@
 {
   "name": "gameframe",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Wrapper for PhysicsJS, which make basic game development as simple as possible.",
   "main": "index.js",
   "scripts": {
