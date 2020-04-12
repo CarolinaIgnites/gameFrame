@@ -416,7 +416,7 @@ var GameFrame;
 
     // Build out the GameFrame class
     // Construct sets up state
-    GameFrame = function(settings, f){
+    module.exports.GameFrame = function(settings, f){
 
         // Set settings
         GameFrame.prototype.name = settings["name"] || "GameFrame Game";
