@@ -241,7 +241,7 @@ var GameFrame;
                 <div id="comment"></div>
                 <button type="button"
                         id="button"
-                        onclick="GameFrame.prototype.init()"
+                        onclick="GameFrame.GameFrame.prototype.init()"
                         class="btn btn-primary">Play game</button>
             </div>
             <div id="backdrop"></div>
