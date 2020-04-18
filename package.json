@@ -7,11 +7,13 @@
     "test": "mocha"
   },
   "author": "CarolinaIgnites",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "jsdom": "^16.2.2",
-    "mocha": "^7.1.1",
     "physicsjs": "^0.7.0"
+  },
+  "devDependencies": {
+    "jsdom": "^16.2.2",
+    "mocha": "^7.1.1"
   },
   "repository": {
     "type": "git",
