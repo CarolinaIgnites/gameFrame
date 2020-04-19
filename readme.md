@@ -88,6 +88,8 @@ Please refer to other examples for other uses.
 The API
 ===
 
+Quick note: All games are in an aspect ratio of 1366 x 768. All sizes are relative to this ratio.
+
 HTML
 --
 
