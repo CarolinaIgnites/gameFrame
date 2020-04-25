@@ -34,6 +34,16 @@ var GameFrame;
     39 : "right",
   }
 
+  // Our set dimension values. These are chosent o represent commpon laptop
+  // aspect ratios.
+  const WIDTH = 1366;
+  const HEIGHT = 768;
+
+  // Our set dimension values. These are chosent o represent commpon laptop
+  // aspect ratios.
+  const WIDTH = 1366;
+  const HEIGHT = 768;
+
   // helpers
   let toFloat = (val, fallback) => { return isNaN(val) ? fallback : val; }
 
@@ -146,26 +156,21 @@ var GameFrame;
         cache.set(cache.key(obj, src), obj.view.src);
       }
     },
-  }
+  };
 
   // Helper functions
   // Determininstic key lookup given ids
-  let keyHash =
-      function(A, B) {
-    return [ A, B ].sort().join();
-  }
+  let keyHash = function(A, B) { return [ A, B ].sort().join(); };
 
   // get input type
-  let getKey =
-      function(code) {
+  let getKey = function(code) {
     if (code in special) {
       return special[code];
     }
     return String.fromCharCode(code);
-  }
+  };
 
-  let resize =
-      function() {
+  let resize = function() {
     let canvas = document.getElementById("viewport");
     if (!canvas)
       return;
@@ -188,11 +193,10 @@ var GameFrame;
       viewportBounds = Physics.aabb(0, 0, renderer.width, renderer.height);
       edgeBounce.setAABB(viewportBounds);
     }
-  }
+  };
 
   // Setup orientation for mobile
-  let orient =
-      function() {
+  let orient = function() {
     // Paul warned us: "I am telling you this as a friend.
     // It exists. It is a thing, but it is a hack.
     // Please don't use it."
@@ -201,7 +205,7 @@ var GameFrame;
       if (document.body.webkitRequestFullScreen)
         document.body.webkitRequestFullScreen();
     }
-  }
+  };
 
   // Get existing context from the page.
   let rebindDom = function() {
@@ -216,8 +220,7 @@ var GameFrame;
   };
 
   // Render dom to page
-  let buildDom =
-      function() {
+  let buildDom = function() {
     rebindDom();
 
     // Create scoreboard
@@ -228,10 +231,26 @@ var GameFrame;
     // Set background
     let src = (game.attributes["img"] || 0).value;
     if (src) {
-      src = GameFrame.prototype.cache_proxy(src, "background");
-      style.innerHTML = "#viewport{background-image:url('" + src +
-                        "');background-size: cover;}";
-      document.body.appendChild(style);
+      Promise.resolve(GameFrame.prototype.cache_proxy(src, "background"))
+          .then(function(src) {
+            style.innerHTML = "#viewport{background-image:url(" + src +
+                              ");background-size: cover;}";
+            document.body.appendChild(style);
+
+            if (GameFrame.prototype.cache_background) {
+              let img = new Image();
+              img.onload = function() {
+                clipboard.width = WIDTH;
+                clipboard.height = HEIGHT;
+                // scale. forget aspect ratio
+                context.drawImage(img, 0, 0, img.width, img.height, 0, 0, WIDTH,
+                                  HEIGHT);
+                // Set the object src
+                cache.set("background", clipboard.toDataURL("image/png"));
+              };
+              img.src = src;
+            }
+          });
     }
 
     // Create modal if needed
@@ -257,11 +276,10 @@ var GameFrame;
     document.getElementById("modal-title").innerHTML = GameFrame.prototype.name;
     document.getElementById("comment").innerHTML =
         GameFrame.prototype.instructions;
-  }
+  };
 
   // Create the object
-  let createObj =
-      function(el) {
+  let createObj = function(el) {
     let type = el.nodeName.toLowerCase();
     let f = taxonomy[type];
     if (f == undefined) {
@@ -275,7 +293,7 @@ var GameFrame;
       GameFrame.prototype.image(obj, src);
     }
     return obj;
-  }
+  };
 
   // add obj to lookups and hashmaps
   let buildObj = function(el) {
@@ -324,8 +342,8 @@ var GameFrame;
       renderer = Physics.renderer('canvas', {
         el : 'viewport',
         meta : false, // don't display meta data
-        width : 1366,
-        height : 768,
+        width : WIDTH,
+        height : HEIGHT,
         autoResize : false
       });
 
@@ -381,6 +399,14 @@ var GameFrame;
 
       // Set up step
       world.on('step', function() {
+          if (running) {
+             pt = t;
+            t = time;
+            if (pt == 0)
+              pt = t;
+            world.step(time);
+          }
+         });
         let dt = t - pt;
         for (let i = 0; i < loops.length; i++) {
           loops[i](lookup, dt);
@@ -391,13 +417,11 @@ var GameFrame;
       // subscribe to ticker to advance the simulation
       if (!started) {
         Physics.util.ticker.on(function(time) {
-          if (running) {
+          pt = t;
+          t = time;
+          if (pt == 0)
             pt = t;
-            t = time;
-            if (pt == 0)
-              pt = t;
-            world.step(time);
-          }
+          world.step(time);
         });
       }
 
@@ -450,6 +474,9 @@ var GameFrame;
     GameFrame.prototype.cache_proxy = "cache_proxy" in settings
                                           ? settings["cache_proxy"]
                                           : function(src) { return src; };
+    GameFrame.prototype.cache_background = "cache_background" in settings
+                                          ? settings["cache_background"]
+                                          : false;
 
     // For external score keeping
     GameFrame.prototype.set_score =
@@ -460,6 +487,10 @@ var GameFrame;
         "get_score" in settings
             ? settings["get_score"]
             : function(src) { return (localStorage["highscore"] | 0); };
+
+    // For external gameover hook.
+    GameFrame.prototype.gameOver_hook =
+        "gameover_hook" in settings ? settings["gameover_hook"] : function() {};
 
     // Set score to 0 if not exists
     GameFrame.prototype.set_score(GameFrame.prototype.get_score());
@@ -536,9 +567,10 @@ var GameFrame;
     } else {
       img.setAttribute('crossOrigin', 'anonymous');
       img.onload = clip[type](obj, img, src);
-      // If a promise isn't passed back, the callback is called with the value.
-      Promise.resolve(GameFrame.prototype.cache_proxy(src, cache.key(obj, src)),
-                      function(src) { img.src = src; });
+      Promise.resolve(GameFrame.prototype.cache_proxy(src, cache.key(obj, src)))
+          .then(function(src) {
+            img.src = src;
+          });
     }
   };
 
@@ -548,14 +580,19 @@ var GameFrame;
     document.getElementById("viewport").remove();
     document.getElementById("modal-title").innerHTML = "Gameover";
     let comment = document.getElementById("comment");
+    // In case there's latency between get_score and set_score, we take the
+    // max. Noticed bug in app implementation.
+    let highscore = Math.max(score, GameFrame.prototype.get_score());
     comment.innerHTML = "Score:" + score;
-    comment.innerHTML += "<br/> Highscore:" + GameFrame.prototype.get_score();
+    comment.innerHTML += "<br/> Highscore:" + highscore;
     if (joystick) {
       joystick.destroy();
       joystick = undefined;
     }
     Physics.util.ticker.stop();
     world.destroy();
+    console.log(GameFrame.prototype.gameOver_hook)
+    GameFrame.prototype.gameOver_hook();
   };
 
   // Increment the score
@@ -565,16 +602,6 @@ var GameFrame;
       GameFrame.prototype.set_score(score);
     }
     scoreboard.innerHTML = "Score: " + score;
-  };
-
-  // Pause or resume the game
-  GameFrame.prototype.pause = function() {
-    world.pause();
-    running = false;
-  };
-  GameFrame.prototype.unpause = function() {
-    world.unpause();
-    running = true;
   };
 
   // Restart the game and physics
@@ -600,5 +627,4 @@ var GameFrame;
     GameFrame.prototype.game(this);
     resize();
   };
-  module.exports.GameFrame = GameFrame;
 })();
