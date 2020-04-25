@@ -19,6 +19,7 @@ var GameFrame;
   // time vars
   let t = 0;
   let pt = 0;
+  let running = true;
 
   /// Global physics vars
   let world;
@@ -234,8 +235,10 @@ var GameFrame;
     }
 
     // Create modal if needed
-    if (!GameFrame.prototype.modal)
+    if (!GameFrame.prototype.modal) {
+      GameFrame.prototype.init()
       return;
+    }
     modal.id = "modal";
     modal.innerHTML = `
             <div id="box">
@@ -388,11 +391,13 @@ var GameFrame;
       // subscribe to ticker to advance the simulation
       if (!started) {
         Physics.util.ticker.on(function(time) {
-          pt = t;
-          t = time;
-          if (pt == 0)
+          if (running) {
             pt = t;
-          world.step(time);
+            t = time;
+            if (pt == 0)
+              pt = t;
+            world.step(time);
+          }
         });
       }
 
@@ -531,7 +536,9 @@ var GameFrame;
     } else {
       img.setAttribute('crossOrigin', 'anonymous');
       img.onload = clip[type](obj, img, src);
-      img.src = GameFrame.prototype.cache_proxy(src, cache.key(obj, src));
+      // If a promise isn't passed back, the callback is called with the value.
+      Promise.resolve(GameFrame.prototype.cache_proxy(src, cache.key(obj, src)),
+                      function(src) { img.src = src; });
     }
   };
 
@@ -558,6 +565,16 @@ var GameFrame;
       GameFrame.prototype.set_score(score);
     }
     scoreboard.innerHTML = "Score: " + score;
+  };
+
+  // Pause or resume the game
+  GameFrame.prototype.pause = function() {
+    world.pause();
+    running = false;
+  };
+  GameFrame.prototype.unpause = function() {
+    world.unpause();
+    running = true;
   };
 
   // Restart the game and physics
